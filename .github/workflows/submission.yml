@@ -1,0 +1,328 @@
+name: Task Submission
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  # ============================================
+  # Job 1: Detect task and validate paths
+  # ============================================
+  setup:
+    name: Setup & Validate
+    runs-on: ubuntu-latest
+    outputs:
+      task_id: ${{ steps.detect.outputs.task_id }}
+      student_name: ${{ steps.detect.outputs.student_name }}
+      week: ${{ steps.detect.outputs.week }}
+      has_notebook: ${{ steps.check-files.outputs.has_notebook }}
+      has_screenshot: ${{ steps.check-files.outputs.has_screenshot }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect task from branch name
+        id: detect
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          echo "Branch: $BRANCH"
+
+          # Extract task ID (e.g., "task-2.1-rahul-kumar" -> "2.1")
+          TASK_ID=$(echo "$BRANCH" | grep -oP 'task-\K[0-9]+\.[0-9]+' || echo "")
+
+          # Extract student name (e.g., "task-2.1-rahul-kumar" -> "rahul_kumar")
+          STUDENT=$(echo "$BRANCH" | sed 's/task-[0-9]*\.[0-9]*-//' | tr '-' '_')
+
+          # Get week number
+          WEEK=$(echo "$TASK_ID" | cut -d'.' -f1)
+
+          echo "task_id=$TASK_ID" >> $GITHUB_OUTPUT
+          echo "student_name=$STUDENT" >> $GITHUB_OUTPUT
+          echo "week=$WEEK" >> $GITHUB_OUTPUT
+
+          echo "Detected: Task=$TASK_ID, Student=$STUDENT, Week=$WEEK"
+
+      - name: Validate branch naming
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          if [[ ! "$BRANCH" =~ ^task-[0-9]+\.[0-9]+-[a-z0-9_-]+$ ]]; then
+            echo "::error::Invalid branch name format"
+            echo "Expected: task-<week>.<task>-<student_name>"
+            echo "Example: task-2.1-rahul-kumar"
+            exit 1
+          fi
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+
+      - name: Validate paths
+        run: |
+          STUDENT="${{ steps.detect.outputs.student_name }}"
+          ALLOWED_PATTERNS=(
+            "cohort/${STUDENT}/"
+            "team/interns/${STUDENT}.md"
+          )
+
+          echo "Allowed patterns for $STUDENT:"
+          printf '%s\n' "${ALLOWED_PATTERNS[@]}"
+          echo ""
+
+          INVALID_FILES=()
+
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            VALID=false
+            for pattern in "${ALLOWED_PATTERNS[@]}"; do
+              if [[ "$file" == $pattern* ]]; then
+                VALID=true
+                break
+              fi
+            done
+
+            if [ "$VALID" = false ]; then
+              INVALID_FILES+=("$file")
+            fi
+          done
+
+          if [ ${#INVALID_FILES[@]} -gt 0 ]; then
+            echo "::error::You modified files outside your allowed paths:"
+            printf '  - %s\n' "${INVALID_FILES[@]}"
+            echo ""
+            echo "You can only modify files in:"
+            echo "  - cohort/${STUDENT}/"
+            echo "  - team/interns/${STUDENT}.md"
+            exit 1
+          fi
+
+          echo "All modified files are in allowed paths"
+
+      - name: Check for special files
+        id: check-files
+        run: |
+          HAS_NOTEBOOK=false
+          HAS_SCREENSHOT=false
+
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            if [[ "$file" == *.ipynb ]]; then
+              HAS_NOTEBOOK=true
+            fi
+            if [[ "$file" == *.png ]] || [[ "$file" == *.jpg ]] || [[ "$file" == *.pdf ]]; then
+              HAS_SCREENSHOT=true
+            fi
+          done
+
+          echo "has_notebook=$HAS_NOTEBOOK" >> $GITHUB_OUTPUT
+          echo "has_screenshot=$HAS_SCREENSHOT" >> $GITHUB_OUTPUT
+
+  # ============================================
+  # Job 2: Linting
+  # ============================================
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install linters
+        run: pip install ruff black
+
+      - name: Run ruff
+        id: ruff
+        continue-on-error: true
+        run: |
+          STUDENT="${{ needs.setup.outputs.student_name }}"
+          if [ -d "cohort/${STUDENT}" ]; then
+            ruff check cohort/${STUDENT}/ --output-format=github || echo "ruff_failed=true" >> $GITHUB_OUTPUT
+          else
+            echo "No cohort folder found for $STUDENT, skipping ruff"
+          fi
+
+      - name: Check formatting with black
+        id: black
+        continue-on-error: true
+        run: |
+          STUDENT="${{ needs.setup.outputs.student_name }}"
+          if [ -d "cohort/${STUDENT}" ]; then
+            black --check cohort/${STUDENT}/ || echo "black_failed=true" >> $GITHUB_OUTPUT
+          else
+            echo "No cohort folder found for $STUDENT, skipping black"
+          fi
+
+      - name: Lint summary
+        run: |
+          if [[ "${{ steps.ruff.outputs.ruff_failed }}" == "true" ]] || [[ "${{ steps.black.outputs.black_failed }}" == "true" ]]; then
+            echo "::warning::Linting issues found. Please fix them."
+            echo ""
+            echo "To fix formatting: black cohort/${{ needs.setup.outputs.student_name }}/"
+            echo "To check issues: ruff check cohort/${{ needs.setup.outputs.student_name }}/"
+            exit 1
+          fi
+          echo "Linting passed"
+
+  # ============================================
+  # Job 3: Run Tests
+  # ============================================
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: setup
+    outputs:
+      passed: ${{ steps.test.outputs.passed }}
+      output: ${{ steps.test.outputs.output }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+          pip install pytest pytest-json-report pandas pandera
+
+      - name: Run task tests
+        id: test
+        continue-on-error: true
+        run: |
+          TASK_ID="${{ needs.setup.outputs.task_id }}"
+          STUDENT="${{ needs.setup.outputs.student_name }}"
+
+          # Convert task ID to test file name (2.1 -> test_2_1.py)
+          TEST_FILE="tests/test_${TASK_ID//./_}.py"
+
+          echo "Looking for test file: $TEST_FILE"
+
+          if [ ! -f "$TEST_FILE" ]; then
+            echo "No test file found for task $TASK_ID"
+            echo "passed=skip" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Run tests with JSON report
+          pytest "$TEST_FILE" -v \
+            --student-folder="cohort/${STUDENT}" \
+            --json-report --json-report-file=test-report.json 2>&1 | tee test-output.txt || true
+
+          # Parse results
+          if [ -f test-report.json ]; then
+            PASSED=$(python -c "import json; r=json.load(open('test-report.json')); print(r['summary']['passed'])")
+            FAILED=$(python -c "import json; r=json.load(open('test-report.json')); print(r['summary']['failed'])")
+            TOTAL=$(python -c "import json; r=json.load(open('test-report.json')); print(r['summary']['total'])")
+
+            echo "Results: $PASSED passed, $FAILED failed, $TOTAL total"
+
+            if [ "$FAILED" -eq "0" ] && [ "$PASSED" -gt "0" ]; then
+              echo "passed=true" >> $GITHUB_OUTPUT
+            else
+              echo "passed=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "No test report generated"
+            echo "passed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: |
+            test-report.json
+            test-output.txt
+          if-no-files-found: ignore
+
+  # ============================================
+  # Job 4: AI Review (for notebooks/screenshots)
+  # ============================================
+  ai-review:
+    name: AI Review
+    runs-on: ubuntu-latest
+    needs: [setup, test]
+    if: needs.setup.outputs.has_notebook == 'true' || needs.setup.outputs.has_screenshot == 'true'
+
+    steps:
+      - name: Trigger AI review
+        env:
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+        run: |
+          if [ -z "$BACKEND_URL" ]; then
+            echo "BACKEND_URL not configured, skipping AI review"
+            exit 0
+          fi
+
+          curl -X POST "${BACKEND_URL}/webhooks/ai-review" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${WEBHOOK_SECRET}" \
+            -d '{
+              "pr_number": ${{ github.event.pull_request.number }},
+              "pr_url": "${{ github.event.pull_request.html_url }}",
+              "task_id": "${{ needs.setup.outputs.task_id }}",
+              "student_github": "${{ github.event.pull_request.user.login }}",
+              "cohort_repo": "${{ github.repository }}",
+              "has_notebook": ${{ needs.setup.outputs.has_notebook }},
+              "has_screenshot": ${{ needs.setup.outputs.has_screenshot }}
+            }' || echo "AI review request failed (non-fatal)"
+
+          echo "AI review triggered"
+
+  # ============================================
+  # Job 5: Notify Backend
+  # ============================================
+  notify:
+    name: Notify Backend
+    runs-on: ubuntu-latest
+    needs: [setup, lint, test]
+    if: always()
+
+    steps:
+      - name: Send results to backend
+        env:
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+        run: |
+          if [ -z "$BACKEND_URL" ]; then
+            echo "BACKEND_URL not configured, skipping notification"
+            exit 0
+          fi
+
+          # Determine overall status
+          LINT_PASSED="${{ needs.lint.result == 'success' }}"
+          TEST_PASSED="${{ needs.test.outputs.passed }}"
+
+          curl -X POST "${BACKEND_URL}/webhooks/github" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${WEBHOOK_SECRET}" \
+            -d '{
+              "event": "pr_check_complete",
+              "pr_number": ${{ github.event.pull_request.number }},
+              "pr_url": "${{ github.event.pull_request.html_url }}",
+              "task_id": "${{ needs.setup.outputs.task_id }}",
+              "student_github": "${{ github.event.pull_request.user.login }}",
+              "branch_name": "${{ github.head_ref }}",
+              "lint_passed": '"$LINT_PASSED"',
+              "test_passed": "'"$TEST_PASSED"'",
+              "cohort_repo": "${{ github.repository }}"
+            }' || echo "Backend notification failed (non-fatal)"
+
+          echo "Backend notified"

@@ -1,0 +1,158 @@
+name: Validate PR
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff black pytest pandas numpy
+
+      - name: Extract task info from branch
+        id: task_info
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          echo "Branch: $BRANCH"
+
+          # Parse branch name: task-{week}.{num}-{username}
+          if [[ $BRANCH =~ ^task-([0-9]+\.[0-9]+)-(.+)$ ]]; then
+            TASK_ID="${BASH_REMATCH[1]}"
+            USERNAME="${BASH_REMATCH[2]}"
+            echo "task_id=$TASK_ID" >> $GITHUB_OUTPUT
+            echo "username=$USERNAME" >> $GITHUB_OUTPUT
+            echo "valid=true" >> $GITHUB_OUTPUT
+            echo "Task ID: $TASK_ID, Username: $USERNAME"
+          else
+            echo "valid=false" >> $GITHUB_OUTPUT
+            echo "Branch name doesn't match expected pattern: task-X.Y-username"
+          fi
+
+      - name: Validate branch naming
+        if: steps.task_info.outputs.valid != 'true'
+        run: |
+          echo "::error::Branch name must follow pattern: task-{week}.{num}-{github-username}"
+          echo "Example: task-1.2-rahul-kumar"
+          exit 1
+
+      - name: Validate file paths
+        run: |
+          USERNAME="${{ steps.task_info.outputs.username }}"
+
+          # Get changed files
+          CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          # Check that all changes are in the student's folder
+          INVALID_FILES=""
+          while IFS= read -r file; do
+            # Skip empty lines
+            [ -z "$file" ] && continue
+
+            # Allow changes only in cohort/{username}/ folder
+            if [[ ! $file =~ ^cohort/$USERNAME/ ]]; then
+              INVALID_FILES="$INVALID_FILES$file\n"
+            fi
+          done <<< "$CHANGED_FILES"
+
+          if [ -n "$INVALID_FILES" ]; then
+            echo "::error::You can only modify files in your folder: cohort/$USERNAME/"
+            echo "Invalid files:"
+            echo -e "$INVALID_FILES"
+            exit 1
+          fi
+
+          echo "All file paths are valid!"
+
+      - name: Run linting
+        id: lint
+        continue-on-error: true
+        run: |
+          USERNAME="${{ steps.task_info.outputs.username }}"
+
+          # Run ruff on student's folder
+          if [ -d "cohort/$USERNAME" ]; then
+            ruff check cohort/$USERNAME --output-format=github || echo "lint_failed=true" >> $GITHUB_OUTPUT
+            black --check cohort/$USERNAME || echo "lint_failed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run tests
+        id: tests
+        continue-on-error: true
+        run: |
+          TASK_ID="${{ steps.task_info.outputs.task_id }}"
+          USERNAME="${{ steps.task_info.outputs.username }}"
+
+          # Set PYTHONPATH to include student's folder
+          export PYTHONPATH="${PYTHONPATH}:$(pwd)/cohort/$USERNAME"
+
+          # Run task-specific tests if they exist
+          TEST_FILE="tests/test_${TASK_ID//./_}.py"
+          if [ -f "$TEST_FILE" ]; then
+            echo "Running tests from $TEST_FILE"
+            pytest "$TEST_FILE" -v --tb=short \
+              --student-folder="cohort/$USERNAME" \
+              || echo "tests_failed=true" >> $GITHUB_OUTPUT
+          else
+            echo "No test file found at $TEST_FILE, skipping tests"
+          fi
+
+      - name: Check results
+        run: |
+          LINT_FAILED="${{ steps.lint.outputs.lint_failed }}"
+          TESTS_FAILED="${{ steps.tests.outputs.tests_failed }}"
+
+          if [ "$LINT_FAILED" = "true" ]; then
+            echo "::error::Linting failed. Run 'ruff check .' and 'black .' to fix."
+          fi
+
+          if [ "$TESTS_FAILED" = "true" ]; then
+            echo "::error::Tests failed. Check the test output above."
+          fi
+
+          if [ "$LINT_FAILED" = "true" ] || [ "$TESTS_FAILED" = "true" ]; then
+            exit 1
+          fi
+
+          echo "All checks passed!"
+
+      - name: Post success comment
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ **All checks passed!**\n\nYour code looks good. A reviewer will merge this PR shortly.'
+            })
+
+      - name: Post failure comment
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ **Checks failed**\n\nPlease review the errors above and push fixes. Common issues:\n- Linting: Run `ruff check . --fix` and `black .`\n- Tests: Check the test output for details'
+            })
