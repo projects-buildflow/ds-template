@@ -14,7 +14,7 @@ Welcome to your final week! You've learned the fundamentals. Now it's time to pu
 Priya wants to automate the daily analytics workflow. Currently, someone manually runs scripts every morning. Your job: design a pipeline that can run unattended.
 
 ### Steps:
-1. Create: `cohort/{your-github-username}/week-4/pipeline_design.md`
+1. Create: `pipeline_design.md`
 2. Include these sections:
    - **Overview**: What does the pipeline do? (1-2 paragraphs)
    - **Data Flow**: Diagram or description of data movement
@@ -54,7 +54,7 @@ This pipeline processes daily order data from Cartly's e-commerce platform...
 
 ### Test locally:
 ```bash
-pytest tests/test_4_1.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_4_1.py -v
 ```
 
 ### Evaluation:
@@ -72,7 +72,7 @@ Time to bring your design to life! Implement a working data pipeline.
 ### Steps:
 1. Create this folder structure:
    ```
-   cohort/{your-github-username}/week-4/pipeline/
+   pipeline/
    ├── extract.py       # Data extraction functions
    ├── transform.py     # Data transformation functions
    ├── load.py          # Data loading functions
@@ -129,7 +129,7 @@ if __name__ == "__main__":
 
 ### Test locally:
 ```bash
-pytest tests/test_4_2.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_4_2.py -v
 ```
 
 ### Evaluation:
@@ -146,8 +146,8 @@ A junior developer used AI to generate a data validator, but it has bugs. Your j
 
 ### Steps:
 1. Look at `week-4/task-4.3/ai_generated_validator.py`
-2. Create: `cohort/{your-github-username}/week-4/fixed_validator.py` (corrected version)
-3. Create: `cohort/{your-github-username}/week-4/bug_report.md` documenting:
+2. Create: `fixed_validator.py` (corrected version)
+3. Create: `bug_report.md` documenting:
    - Each bug you found
    - What was wrong
    - How you fixed it
@@ -175,7 +175,7 @@ A junior developer used AI to generate a data validator, but it has bugs. Your j
 
 ### Test locally:
 ```bash
-pytest tests/test_4_3.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_4_3.py -v
 ```
 
 ### Evaluation:
@@ -191,7 +191,7 @@ PR-based with automated tests against edge cases.
 It's your last day! Priya has asked you to present your work to the team. This is your chance to showcase what you've learned.
 
 ### Steps:
-1. Create a presentation (PDF format): `cohort/{your-github-username}/week-4/presentation.pdf`
+1. Create a presentation (PDF format): `presentation.pdf`
 2. Include these sections:
    - **Introduction**: Who you are, your background (1 slide)
    - **Journey**: Your path through the internship (1-2 slides)
@@ -226,7 +226,7 @@ Key Achievement: Reduced manual reporting time by 80%
 
 ### Test locally:
 ```bash
-pytest tests/test_4_4.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_4_4.py -v
 ```
 
 ### Evaluation:

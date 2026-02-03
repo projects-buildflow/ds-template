@@ -8,8 +8,8 @@
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/cartly-data/{your-cohort-repo})
-- [Discord #ask-priya](https://discord.com/channels/cartly/ask-priya) - Get help
+- Your repository on GitHub
+- Team Chat - Get help from mentors
 - [All Tasks Overview](../../docs/)
 
 
@@ -25,7 +25,7 @@ It's your last day! Priya has asked you to present your work to the team. This i
 
 1. **Create your presentation**
 
-   Save as: `cohort/{your-github-username}/week-4/presentation.pdf`
+   Save as: `presentation.pdf`
 
 2. **Include these sections:**
 
@@ -104,7 +104,7 @@ Impact:
 ## Test Locally
 
 ```bash
-pytest tests/test_4_4.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_4_4.py -v
 ```
 
 ## Creating Your PDF
@@ -154,7 +154,7 @@ Good luck with your data career!
 - Check for trailing whitespace or formatting issues
 - Run `black` and `ruff` to auto-fix style issues
 
-**Still stuck?** Ask in `#ask-priya` on Discord!
+**Still stuck?** Ask in Team Chat!
 
 ---
 **Previous Task:** [Task 4.3: Debug AI Code](../task-4.3/INSTRUCTIONS.md)

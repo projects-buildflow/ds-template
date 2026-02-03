@@ -10,14 +10,14 @@
 
 A full-stack platform for a simulated 4-week data science internship with:
 - GitHub-based task submissions with automated testing
-- Discord bot for engagement and commands
+- In-platform Team Chat for engagement and support
 - AI-powered code review (Claude)
 - Admin dashboard for cohort management
 - XP/gamification system
 
 **Components:**
-1. **Backend** (FastAPI) - API, Discord bot, webhooks
-2. **Frontend** (Next.js) - Student dashboard, admin portal
+1. **Backend** (FastAPI) - API, webhooks
+2. **Frontend** (Next.js) - Student dashboard, admin portal, Team Chat
 3. **GitHub Template** - Intern submission repo with CI/CD
 4. **Database** (Supabase/PostgreSQL) - Data persistence
 
@@ -28,7 +28,7 @@ A full-stack platform for a simulated 4-week data science internship with:
 | Component | Status | Progress |
 |-----------|--------|----------|
 | Backend API | Working | 90% |
-| Discord Bot | Working | 90% |
+| Team Chat | Working | 90% |
 | Frontend (Student) | Working | 85% |
 | Frontend (Admin) | **Not Started** | 0% |
 | GitHub Template | **Complete** | 100% |
@@ -47,14 +47,14 @@ A full-stack platform for a simulated 4-week data science internship with:
 | `/tasks` | list, by-week, by-id, student-tasks, summary | Done |
 | `/admin` | create/list/update cohorts, add students, bulk import, broadcast | Done |
 | `/webhooks` | github (test results), ai-review-complete | Done |
-| `/auth` | discord oauth (authorize, callback, unlink) | Done |
+| `/auth` | oauth (authorize, callback, unlink) | Done |
 
 ### Partially Working
 
 | Feature | Issue |
 |---------|-------|
 | Task locking | `UNLOCK_ALL_TASKS = True` - disabled for testing |
-| Discord messages | Fixed - now sends via Discord API |
+| In-app messages | Fixed - now sends via Team Chat |
 
 ### Not Implemented
 
@@ -67,33 +67,7 @@ A full-stack platform for a simulated 4-week data science internship with:
 
 ---
 
-## 2. Discord Bot (`/backend/bot`)
-
-### Commands - All Working
-
-| Command | Description | Status |
-|---------|-------------|--------|
-| `/status` | View progress, XP, streak, current task | Done |
-| `/help` | Get hints for current task | Done |
-| `/submit <token>` | Submit Task 1.1 verification | Done |
-| `/leaderboard` | View top 10 students | Done |
-| `/profile` | Detailed student profile | Done |
-| `/ask <question>` | AI Q&A with Priya (Claude) | Done |
-
-### Bot Features
-
-| Feature | Status |
-|---------|--------|
-| Member join handler (auto-role, welcome DM) | Done |
-| Daily streak check (24h loop) | Done |
-| Role updates on progression | Done |
-| Task result notifications | Done |
-| Scheduled narrative messages | Done |
-| Broadcast messages | Done |
-
----
-
-## 3. Frontend - Student Dashboard (`/frontend`)
+## 2. Frontend - Student Dashboard (`/frontend`)
 
 ### Implemented Pages
 
@@ -101,7 +75,7 @@ A full-stack platform for a simulated 4-week data science internship with:
 |------|----------|--------|
 | `/login` | Email/password auth | Done |
 | `/signup` | Registration | Done |
-| `/onboarding` | Collect name, Discord, GitHub | Done |
+| `/onboarding` | Collect name, GitHub | Done |
 | `/dashboard` | Progress, current task, stats | Done |
 | `/tasks` | All 16 tasks by week | Done |
 | `/tasks/[id]` | Task details, submission guide | Done |
@@ -113,11 +87,11 @@ A full-stack platform for a simulated 4-week data science internship with:
 
 - NavHeader, DashboardWrapper, WeekProgress, ProgressBar
 - TaskCard, LeaderboardTable, TokenSubmitForm
-- DiscordConnectCard, WelcomeModal, OnboardingForm
+- WelcomeModal, OnboardingForm
 
 ---
 
-## 4. Frontend - Admin Dashboard (NOT IMPLEMENTED)
+## 3. Frontend - Admin Dashboard (NOT IMPLEMENTED)
 
 ### Required for MVP
 
@@ -145,7 +119,7 @@ A full-stack platform for a simulated 4-week data science internship with:
 
 ---
 
-## 5. GitHub Template (`/github-template`)
+## 4. GitHub Template (`/github-template`)
 
 ### Week 1: Onboarding (100% Complete)
 
@@ -204,7 +178,7 @@ A full-stack platform for a simulated 4-week data science internship with:
 
 ---
 
-## 6. Database Schema (Complete)
+## 5. Database Schema (Complete)
 
 | Table | Description | Status |
 |-------|-------------|--------|
@@ -235,7 +209,7 @@ A full-stack platform for a simulated 4-week data science internship with:
 ### P1 - Should Have
 
 - [ ] Admin authentication on backend endpoints
-- [x] Broadcast messages actually sending to Discord
+- [x] Broadcast messages sending via Team Chat
 - [ ] Task locking based on prerequisites (set `UNLOCK_ALL_TASKS = False`)
 - [x] `src/data_loader.py` for Task 1.3 (with intentional bug)
 - [x] Task starter templates in week folders (INSTRUCTIONS.md)
@@ -275,7 +249,7 @@ A full-stack platform for a simulated 4-week data science internship with:
 - GitHub Actions for automated testing
 - Custom Claude code review
 - Claude vision review for Power BI screenshots
-- Discord bot with core commands
+- Team Chat with AI personas
 - XP system and leaderboard
 - Role progression
 - Narrative messages (pre-written)
@@ -299,7 +273,7 @@ A full-stack platform for a simulated 4-week data science internship with:
 | Backend | FastAPI, Python 3.11 |
 | Frontend | Next.js 15, React, Tailwind |
 | Database | PostgreSQL (Supabase) |
-| Bot | discord.py |
+| Team Chat | In-platform messaging |
 | AI | Claude Sonnet (Anthropic API) |
 | CI/CD | GitHub Actions |
-| Auth | Supabase Auth, Discord OAuth |
+| Auth | Supabase Auth |

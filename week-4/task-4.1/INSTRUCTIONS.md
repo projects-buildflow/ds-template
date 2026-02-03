@@ -8,8 +8,8 @@
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/cartly-data/{your-cohort-repo})
-- [Discord #ask-priya](https://discord.com/channels/cartly/ask-priya) - Get help
+- Your repository on GitHub
+- Team Chat - Get help from mentors
 - [All Tasks Overview](../../docs/)
 
 
@@ -25,7 +25,7 @@ Priya wants to automate the daily analytics workflow. Currently, someone manuall
 
 1. **Create your design document**
 
-   Create: `cohort/{your-github-username}/week-4/pipeline_design.md`
+   Create: `pipeline_design.md`
 
 2. **Include these sections:**
 
@@ -116,7 +116,7 @@ each morning and produces daily revenue reports and customer metrics.
 ## Test Locally
 
 ```bash
-pytest tests/test_4_1.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_4_1.py -v
 ```
 
 
@@ -124,10 +124,10 @@ pytest tests/test_4_1.py -v --student-folder=cohort/{your-github-username}
 
 1. **Create a branch:**
    ```bash
-   git checkout -b task-4.1-{your-github-username}
+   git checkout -b task-4.1
    ```
 
-2. **Do your work** in `cohort/{your-github-username}/`
+2. **Do your work** in the repository root
 
 3. **Test locally:**
    ```bash
@@ -138,7 +138,7 @@ pytest tests/test_4_1.py -v --student-folder=cohort/{your-github-username}
    ```bash
    git add .
    git commit -m "Complete task 4.1"
-   git push -u origin task-4.1-{your-github-username}
+   git push -u origin task-4.1
    ```
 
 5. **Open a Pull Request** on GitHub and wait for CI to pass
@@ -169,7 +169,7 @@ Your design document will be reviewed for completeness and thoughtfulness.
 - Check for trailing whitespace or formatting issues
 - Run `black` and `ruff` to auto-fix style issues
 
-**Still stuck?** Ask in `#ask-priya` on Discord!
+**Still stuck?** Ask in Team Chat!
 
 ---
 **Previous Task:** [Task 3.4: Dashboard Creation](../../week-3/task-3.4/INSTRUCTIONS.md) | **Next Task:** [Task 4.2: Implement Pipeline](../task-4.2/INSTRUCTIONS.md)

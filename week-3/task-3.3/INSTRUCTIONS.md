@@ -8,8 +8,8 @@
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/cartly-data/{your-cohort-repo})
-- [Discord #ask-priya](https://discord.com/channels/cartly/ask-priya) - Get help
+- Your repository on GitHub
+- Team Chat - Get help from mentors
 - [All Tasks Overview](../../docs/)
 
 
@@ -29,11 +29,11 @@ Ananya found a query that's taking 30+ seconds to run. It's blocking other repor
 
 2. **Create your optimized version**
 
-   Create: `cohort/{your-github-username}/week-3/optimized_query.sql`
+   Create: `optimized_query.sql`
 
 3. **Document your changes**
 
-   Create: `cohort/{your-github-username}/week-3/optimization_notes.md`
+   Create: `optimization_notes.md`
 
    Include:
    - What made the original query slow
@@ -90,7 +90,7 @@ The optimized query should run in under 1 second compared to 30+ seconds for the
 ## Test Locally
 
 ```bash
-pytest tests/test_3_3.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_3_3.py -v
 ```
 
 
@@ -98,10 +98,10 @@ pytest tests/test_3_3.py -v --student-folder=cohort/{your-github-username}
 
 1. **Create a branch:**
    ```bash
-   git checkout -b task-3.3-{your-github-username}
+   git checkout -b task-3.3
    ```
 
-2. **Do your work** in `cohort/{your-github-username}/`
+2. **Do your work** in the repository root
 
 3. **Test locally:**
    ```bash
@@ -112,7 +112,7 @@ pytest tests/test_3_3.py -v --student-folder=cohort/{your-github-username}
    ```bash
    git add .
    git commit -m "Complete task 3.3"
-   git push -u origin task-3.3-{your-github-username}
+   git push -u origin task-3.3
    ```
 
 5. **Open a Pull Request** on GitHub and wait for CI to pass
@@ -143,7 +143,7 @@ Your optimized query's output will be compared to the original. Your notes will 
 - Check for trailing whitespace or formatting issues
 - Run `black` and `ruff` to auto-fix style issues
 
-**Still stuck?** Ask in `#ask-priya` on Discord!
+**Still stuck?** Ask in Team Chat!
 
 ---
 **Previous Task:** [Task 3.2: SQL Cohort Analysis](../task-3.2/INSTRUCTIONS.md) | **Next Task:** [Task 3.4: Dashboard Creation](../task-3.4/INSTRUCTIONS.md)

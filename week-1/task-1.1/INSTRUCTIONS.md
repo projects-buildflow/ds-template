@@ -6,8 +6,8 @@
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/cartly-data/{your-cohort-repo})
-- [Discord #ask-priya](https://discord.com/channels/cartly/ask-priya) - Get help
+- Your repository on GitHub
+- Team Chat - Get help from mentors
 - [All Tasks Overview](../../docs/)
 
 
@@ -71,17 +71,6 @@ CARTLY-XXXXXXXXXXXX-XXXX
 
 ## Submitting Your Token
 
-You can submit your token in two ways:
-
-### Option 1: Discord (Recommended)
-
-In any channel, use the slash command:
-```
-/submit CARTLY-YOUR-TOKEN-HERE
-```
-
-### Option 2: Web Portal
-
 Go to your Tasks page, click on Task 1.1, and enter your token in the form.
 
 ## Troubleshooting
@@ -104,7 +93,7 @@ Go to your Tasks page, click on Task 1.1, and enter your token in the form.
 
 - Keep your virtual environment activated while working on tasks
 - If you have multiple Python versions, use `python3` instead of `python`
-- Ask in `#ask-priya` if you get stuck!
+- Ask in Team Chat if you get stuck!
 
 ---
 

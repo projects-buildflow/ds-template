@@ -8,8 +8,8 @@
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/cartly-data/{your-cohort-repo})
-- [Discord #ask-priya](https://discord.com/channels/cartly/ask-priya) - Get help
+- Your repository on GitHub
+- Team Chat - Get help from mentors
 - [All Tasks Overview](../../docs/)
 
 
@@ -29,11 +29,11 @@ A junior developer used AI to generate a data validator, but it has bugs. Your j
 
 2. **Create your fixed version**
 
-   Create: `cohort/{your-github-username}/week-4/fixed_validator.py`
+   Create: `fixed_validator.py`
 
 3. **Document the bugs**
 
-   Create: `cohort/{your-github-username}/week-4/bug_report.md`
+   Create: `bug_report.md`
 
 ## The Challenge
 
@@ -90,7 +90,7 @@ test_cases = [
 ## Test Locally
 
 ```bash
-pytest tests/test_4_3.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_4_3.py -v
 ```
 
 
@@ -98,10 +98,10 @@ pytest tests/test_4_3.py -v --student-folder=cohort/{your-github-username}
 
 1. **Create a branch:**
    ```bash
-   git checkout -b task-4.3-{your-github-username}
+   git checkout -b task-4.3
    ```
 
-2. **Do your work** in `cohort/{your-github-username}/`
+2. **Do your work** in the repository root
 
 3. **Test locally:**
    ```bash
@@ -112,7 +112,7 @@ pytest tests/test_4_3.py -v --student-folder=cohort/{your-github-username}
    ```bash
    git add .
    git commit -m "Complete task 4.3"
-   git push -u origin task-4.3-{your-github-username}
+   git push -u origin task-4.3
    ```
 
 5. **Open a Pull Request** on GitHub and wait for CI to pass
@@ -143,7 +143,7 @@ Automated tests will run your fixed validator against edge cases. Your bug repor
 - Check for trailing whitespace or formatting issues
 - Run `black` and `ruff` to auto-fix style issues
 
-**Still stuck?** Ask in `#ask-priya` on Discord!
+**Still stuck?** Ask in Team Chat!
 
 ---
 **Previous Task:** [Task 4.2: Implement Pipeline](../task-4.2/INSTRUCTIONS.md) | **Next Task:** [Task 4.4: Final Presentation](../task-4.4/INSTRUCTIONS.md)

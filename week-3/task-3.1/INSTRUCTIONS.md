@@ -8,8 +8,8 @@
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/cartly-data/{your-cohort-repo})
-- [Discord #ask-priya](https://discord.com/channels/cartly/ask-priya) - Get help
+- Your repository on GitHub
+- Team Chat - Get help from mentors
 - [All Tasks Overview](../../docs/)
 
 
@@ -29,13 +29,13 @@ Priya has assigned this to you. Time to put your analysis skills to work.
 
 1. **Create your notebook**
 
-   Create: `cohort/{your-github-username}/week-3/revenue_investigation.ipynb`
+   Create: `revenue_investigation.ipynb`
 
 2. **Load and analyze the data**
    ```python
    import pandas as pd
-   orders = pd.read_csv('../../data/orders.csv')
-   customers = pd.read_csv('../../data/customers.csv')
+   orders = pd.read_csv('data/orders.csv')
+   customers = pd.read_csv('data/customers.csv')
    ```
 
 3. **Include these required sections:**
@@ -67,7 +67,7 @@ Recommend [action] to address this.
 import pandas as pd
 import matplotlib.pyplot as plt
 
-orders = pd.read_csv('../../data/orders.csv', parse_dates=['order_date'])
+orders = pd.read_csv('data/orders.csv', parse_dates=['order_date'])
 
 # Monthly revenue trend
 monthly_revenue = orders.groupby(orders['order_date'].dt.to_period('M'))['total'].sum()
@@ -81,7 +81,7 @@ plt.show()
 ## Test Locally
 
 ```bash
-pytest tests/test_3_1.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_3_1.py -v
 ```
 
 ## Tips
@@ -110,7 +110,7 @@ Your notebook will be reviewed by AI for completeness and insight quality.
 - Check for trailing whitespace or formatting issues
 - Run `black` and `ruff` to auto-fix style issues
 
-**Still stuck?** Ask in `#ask-priya` on Discord!
+**Still stuck?** Ask in Team Chat!
 
 ---
 **Previous Task:** [Task 2.4: Code Review Guidelines](../../week-2/task-2.4/INSTRUCTIONS.md) | **Next Task:** [Task 3.2: SQL Cohort Analysis](../task-3.2/INSTRUCTIONS.md)

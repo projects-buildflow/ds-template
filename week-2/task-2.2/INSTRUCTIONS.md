@@ -8,8 +8,8 @@
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/cartly-data/{your-cohort-repo})
-- [Discord #ask-priya](https://discord.com/channels/cartly/ask-priya) - Get help
+- Your repository on GitHub
+- Team Chat - Get help from mentors
 - [All Tasks Overview](../../docs/)
 
 
@@ -30,7 +30,7 @@ After your profiling report, the team decided we need automated data validation.
 
 2. **Create your schema file**
 
-   Create: `cohort/{your-github-username}/week-2/validation_schema.py`
+   Create: `validation_schema.py`
 
 3. **Define validation rules**
 
@@ -62,7 +62,7 @@ def validate_customers(df):
 ## Test Locally
 
 ```bash
-pytest tests/test_2_2.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_2_2.py -v
 ```
 
 
@@ -70,10 +70,10 @@ pytest tests/test_2_2.py -v --student-folder=cohort/{your-github-username}
 
 1. **Create a branch:**
    ```bash
-   git checkout -b task-2.2-{your-github-username}
+   git checkout -b task-2.2
    ```
 
-2. **Do your work** in `cohort/{your-github-username}/`
+2. **Do your work** in the repository root
 
 3. **Test locally:**
    ```bash
@@ -84,7 +84,7 @@ pytest tests/test_2_2.py -v --student-folder=cohort/{your-github-username}
    ```bash
    git add .
    git commit -m "Complete task 2.2"
-   git push -u origin task-2.2-{your-github-username}
+   git push -u origin task-2.2
    ```
 
 5. **Open a Pull Request** on GitHub and wait for CI to pass
@@ -114,7 +114,7 @@ Automated tests will check that your schema correctly accepts valid data and rej
 - Check for trailing whitespace or formatting issues
 - Run `black` and `ruff` to auto-fix style issues
 
-**Still stuck?** Ask in `#ask-priya` on Discord!
+**Still stuck?** Ask in Team Chat!
 
 ---
 **Previous Task:** [Task 2.1: Profile the Marketing Data](../task-2.1/INSTRUCTIONS.md) | **Next Task:** [Task 2.3: Clean the Data](../task-2.3/INSTRUCTIONS.md)

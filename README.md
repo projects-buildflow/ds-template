@@ -1,216 +1,155 @@
-# BuildFlow - Data Science Learning Platform
+# Cartly - Data Science Virtual Internship
 
-A full-stack platform for managing data science internships with Discord bot integration, GitHub Actions automation, and AI-powered code review.
+Welcome to **Cartly**, a fast-growing D2C e-commerce company! Over the next 4 weeks, you'll work on real data challenges as a Data Analyst intern, learning Python, pandas, SQL, and data pipeline development.
+
+## Your Mission
+
+Cartly is experiencing rapid growth and their data is a mess. As a new data intern on Priya's team, you'll clean messy datasets, investigate why revenue dropped, write SQL queries, and build data pipelines that the company will actually use.
 
 ## Project Structure
 
 ```
-ds-buildflow/
-├── frontend/          # Next.js frontend application
-│   ├── src/          # Source code
-│   ├── public/       # Static assets
-│   └── package.json  # Frontend dependencies
-├── backend/          # FastAPI backend application
-│   ├── app/          # Main application code
-│   ├── bot/          # Discord bot code
-│   └── requirements.txt  # Python dependencies
-├── supabase/         # Database migrations
-│   └── migrations/   # SQL migration files
-└── docs/             # Documentation
+cartly-data/
+├── data/                   # Sample datasets (orders, customers, products)
+├── scripts/                # Utility scripts
+│   └── verify_setup.py     # Task 1.1 verification
+├── src/                    # Source code modules
+├── tests/                  # Automated tests for your submissions
+├── week-1/                 # Your Week 1 work goes here
+├── week-2/                 # Your Week 2 work goes here
+├── week-3/                 # Your Week 3 work goes here
+├── week-4/                 # Your Week 4 work goes here
+└── requirements.txt        # Python dependencies
 ```
 
 ## Prerequisites
 
-- **Node.js** 18+ and npm
-- **Python** 3.11+
-- **PostgreSQL** (via Supabase)
-- **Discord Bot Token** (for Discord integration)
-- **GitHub Token** (for GitHub Actions integration)
+- **Python** 3.8+ ([Download](https://www.python.org/downloads/))
+- **Git** ([Download](https://git-scm.com/))
+- **VS Code** (recommended) with Python extension
 
 ## Quick Start
 
-### 1. Frontend Setup
+### 1. Clone Your Repository
 
 ```bash
-cd frontend
-npm install
-npm run dev
+git clone <your-repo-url>
+cd cartly-<your-username>
 ```
 
-Frontend will be available at: http://localhost:3000
-
-### 2. Backend Setup
+### 2. Create Virtual Environment
 
 ```bash
-cd backend
-
-# Create virtual environment
-python3 -m venv venv
-
-# Activate virtual environment
+python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-# Install dependencies
+### 3. Install Dependencies
+
+```bash
 pip install -r requirements.txt
-
-# Set up environment variables
-cp .env.example .env  # Edit .env with your values
-
-# Run the backend
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Backend will be available at: http://localhost:8000
-API Documentation: http://localhost:8000/docs
-
-### 3. Database Setup
-
-The project uses Supabase for the database. Migrations are in `supabase/migrations/`.
-
-Run migrations through Supabase dashboard or CLI.
-
-## Environment Variables
-
-### Backend (.env)
-
-Create `backend/.env` with:
-
-```env
-# Database (Supabase)
-DATABASE_URL=your-database-url
-SUPABASE_URL=your-supabase-url
-SUPABASE_KEY=your-supabase-key
-SUPABASE_SERVICE_KEY=your-service-key
-
-# GitHub
-GITHUB_TOKEN=your-github-token
-GITHUB_WEBHOOK_SECRET=your-webhook-secret
-
-# Discord
-DISCORD_TOKEN=your-discord-bot-token
-DISCORD_GUILD_ID=your-discord-server-id
-
-# Anthropic (for AI review)
-ANTHROPIC_API_KEY=your-anthropic-api-key
-
-# Backend
-BACKEND_URL=http://localhost:8000
-WEBHOOK_SECRET=your-webhook-secret
-
-# CORS
-CORS_ORIGINS=http://localhost:3000
-```
-
-### Frontend (.env.local)
-
-Create `frontend/.env.local` with:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
-```
-
-## Running Both Services
-
-### Option 1: Separate Terminals
-
-**Terminal 1 - Backend:**
-```bash
-cd backend
-source venv/bin/activate
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-**Terminal 2 - Frontend:**
-```bash
-cd frontend
-npm run dev
-```
-
-### Option 2: Background Processes
+### 4. Verify Setup (Task 1.1)
 
 ```bash
-# Backend
-cd backend && source venv/bin/activate && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 &
-
-# Frontend
-cd frontend && npm run dev &
+python scripts/verify_setup.py
 ```
 
-## Discord Bot
+If successful, you'll receive a verification token. Save the output to `week-1/setup_complete.txt` and submit via PR.
 
-See [DISCORD_BOT_SETUP.md](./DISCORD_BOT_SETUP.md) for detailed Discord bot setup instructions.
+## Tech Stack
 
-Quick start:
-```bash
-cd backend
-source venv/bin/activate
-python3 -m bot.main
-```
+- **Python 3.11** - Primary language
+- **pandas** - Data manipulation
+- **numpy** - Numerical computing
+- **pytest** - Testing framework
+- **pandera** - Data validation
+- **matplotlib/seaborn** - Visualization
 
-## Development
+## Weekly Overview
 
-### Frontend Development
-- Framework: Next.js 15 with App Router
-- Styling: Tailwind CSS
-- UI Components: Radix UI
-- State Management: React Server Components
+### Week 1: Onboarding (150 XP)
+Set up your environment, fix a data deduplication bug, fix a date parsing bug, and write documentation.
 
-### Backend Development
-- Framework: FastAPI
-- Database: PostgreSQL (via Supabase)
-- ORM: asyncpg (async PostgreSQL driver)
-- Validation: Pydantic
+### Week 2: Data Quality (300 XP)
+Profile messy marketing data, write validation schemas with Pandera, build a cleaning pipeline.
 
-## Documentation
+### Week 3: Analysis (350 XP)
+Investigate why October revenue dropped 15%, write SQL cohort queries, optimize slow queries, build dashboards.
 
-- [Product Requirements Document](./docs/01-PRD.md)
-- [Technical Architecture](./docs/02-TECHNICAL-ARCHITECTURE.md)
-- [Database Schema](./docs/03-DATABASE-SCHEMA.md)
-- [API Specification](./docs/04-API-SPECIFICATION.md)
-- [Discord Bot Specification](./docs/05-DISCORD-BOT-SPEC.md)
-- [GitHub Actions Setup](./docs/06-GITHUB-ACTIONS.md)
-- [Discord Bot Setup Guide](./DISCORD_BOT_SETUP.md)
+### Week 4: Capstone (450 XP)
+Design and implement an end-to-end data pipeline, debug AI-generated code, present your work.
 
-## Testing
+## Team Contacts (AI Personas)
 
-### Backend Tests
-```bash
-cd backend
-source venv/bin/activate
-pytest
-```
+Your team members will guide you through the internship:
 
-### Frontend Tests
-```bash
-cd frontend
-npm test
-```
+- **Priya Sharma** (Data Lead) - Code reviews, best practices, technical mentorship
+- **Vikram Nair** (Product Manager) - Business context, requirements, stakeholder needs
 
-## Deployment
+## Submitting Your Work
 
-### Backend (Railway/Heroku)
-- Set environment variables in your hosting platform
-- Deploy from `backend/` directory
-- Use `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+### Token Tasks (Task 1.1)
+1. Run the verification script
+2. Save output to the specified file
+3. Create a PR with the file
 
-### Frontend (Vercel)
-- Deploy from `frontend/` directory
-- Configure environment variables in Vercel dashboard
+### Code Tasks (Most Tasks)
+1. Create a new branch: `git checkout -b task-1.2`
+2. Make your changes in the appropriate `week-X/` folder
+3. Commit: `git commit -m "Complete task 1.2: Fix deduplication bug"`
+4. Push: `git push -u origin task-1.2`
+5. Create a Pull Request on GitHub
+6. Tests run automatically - AI review provides feedback
+
+### Branch Naming
+Your branch should include the task number:
+- `task-1.2` (simple)
+- `task-1.2-fix-dedup` (with description)
+- `feature/1.2-deduplication` (alternative format)
+
+## Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `python scripts/verify_setup.py` | Verify environment setup |
+| `pytest tests/test_X_Y.py -v` | Run tests for task X.Y |
+| `ruff check .` | Check code style |
+| `black .` | Format code |
 
 ## Troubleshooting
 
-### Backend Issues
-- **Module not found**: Make sure virtual environment is activated and dependencies are installed
-- **Database connection errors**: Verify `DATABASE_URL` in `.env`
-- **Port already in use**: Change port with `--port 8001`
+### Virtual environment issues
+```bash
+# Recreate the environment
+rm -rf venv
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-### Frontend Issues
-- **Next.js not found**: Run `npm install` in `frontend/` directory
-- **Build errors**: Check Node.js version (18+ required)
-- **API connection errors**: Verify `NEXT_PUBLIC_BACKEND_URL` in `.env.local`
+### "Module not found" errors
+```bash
+# Make sure venv is activated
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-## License
+### Tests failing locally
+```bash
+# Run specific test with verbose output
+pytest tests/test_1_2.py -v -s
+```
 
-[Add your license here]
+## Resources
+
+- [pandas Documentation](https://pandas.pydata.org/docs/)
+- [Python Data Science Handbook](https://jakevdp.github.io/PythonDataScienceHandbook/)
+- [Real Python Tutorials](https://realpython.com/)
+
+---
+
+**Ready to start?** Run `python scripts/verify_setup.py` to complete Task 1.1!
+
+Good luck, and welcome to Cartly!

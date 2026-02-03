@@ -8,8 +8,8 @@
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/cartly-data/{your-cohort-repo})
-- [Discord #ask-priya](https://discord.com/channels/cartly/ask-priya) - Get help
+- Your repository on GitHub
+- Team Chat - Get help from mentors
 - [All Tasks Overview](../../docs/)
 
 
@@ -25,7 +25,7 @@ Vikram (Product Manager) wants to understand customer retention patterns. He nee
 
 1. **Create your SQL file**
 
-   Create: `cohort/{your-github-username}/week-3/cohort_analysis.sql`
+   Create: `cohort_analysis.sql`
 
 2. **Write a query that:**
    - Groups customers by their first purchase month (their "cohort")
@@ -78,7 +78,7 @@ ORDER BY cohort_month;
 ## Test Locally
 
 ```bash
-pytest tests/test_3_2.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_3_2.py -v
 ```
 
 
@@ -86,10 +86,10 @@ pytest tests/test_3_2.py -v --student-folder=cohort/{your-github-username}
 
 1. **Create a branch:**
    ```bash
-   git checkout -b task-3.2-{your-github-username}
+   git checkout -b task-3.2
    ```
 
-2. **Do your work** in `cohort/{your-github-username}/`
+2. **Do your work** in the repository root
 
 3. **Test locally:**
    ```bash
@@ -100,7 +100,7 @@ pytest tests/test_3_2.py -v --student-folder=cohort/{your-github-username}
    ```bash
    git add .
    git commit -m "Complete task 3.2"
-   git push -u origin task-3.2-{your-github-username}
+   git push -u origin task-3.2
    ```
 
 5. **Open a Pull Request** on GitHub and wait for CI to pass
@@ -131,7 +131,7 @@ Your query will be executed and the output format validated.
 - Check for trailing whitespace or formatting issues
 - Run `black` and `ruff` to auto-fix style issues
 
-**Still stuck?** Ask in `#ask-priya` on Discord!
+**Still stuck?** Ask in Team Chat!
 
 ---
 **Previous Task:** [Task 3.1: Revenue Investigation](../task-3.1/INSTRUCTIONS.md) | **Next Task:** [Task 3.3: Query Optimization](../task-3.3/INSTRUCTIONS.md)

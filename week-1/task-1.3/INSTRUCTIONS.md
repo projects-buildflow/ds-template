@@ -8,8 +8,8 @@
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/cartly-data/{your-cohort-repo})
-- [Discord #ask-priya](https://discord.com/channels/cartly/ask-priya) - Get help
+- Your repository on GitHub
+- Team Chat - Get help from mentors
 - [All Tasks Overview](../../docs/)
 
 
@@ -37,7 +37,7 @@ The `src/data_loader.py` module has a bug in the `load_orders()` function. When 
 
 4. **Create documentation**
 
-   Create `cohort/{your-github-username}/week-1/README.md` explaining:
+   Create `README.md` explaining:
    - What the bug was
    - How you fixed it
    - Why the fix works
@@ -49,7 +49,7 @@ The `load_orders()` function specifies a date format that doesn't match the actu
 ## Test Locally
 
 ```bash
-pytest tests/test_1_3.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_1_3.py -v
 ```
 
 ## Hints
@@ -67,10 +67,10 @@ Submit your PR with your README explaining the fix. The tests will verify that d
 
 1. **Create a branch:**
    ```bash
-   git checkout -b task-1.3-{your-github-username}
+   git checkout -b task-1.3
    ```
 
-2. **Do your work** in `cohort/{your-github-username}/`
+2. **Do your work** in the repository root
 
 3. **Test locally:**
    ```bash
@@ -81,7 +81,7 @@ Submit your PR with your README explaining the fix. The tests will verify that d
    ```bash
    git add .
    git commit -m "Complete task 1.3"
-   git push -u origin task-1.3-{your-github-username}
+   git push -u origin task-1.3
    ```
 
 5. **Open a Pull Request** on GitHub and wait for CI to pass
@@ -101,7 +101,7 @@ Submit your PR with your README explaining the fix. The tests will verify that d
 - Check for trailing whitespace or formatting issues
 - Run `black` and `ruff` to auto-fix style issues
 
-**Still stuck?** Ask in `#ask-priya` on Discord!
+**Still stuck?** Ask in Team Chat!
 
 ---
 **Previous Task:** [Task 1.2: Join the Team](../task-1.2/INSTRUCTIONS.md) | **Next Task:** [Task 1.4: Document the Fix](../task-1.4/INSTRUCTIONS.md)

@@ -8,8 +8,8 @@
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/cartly-data/{your-cohort-repo})
-- [Discord #ask-priya](https://discord.com/channels/cartly/ask-priya) - Get help
+- Your repository on GitHub
+- Team Chat - Get help from mentors
 - [All Tasks Overview](../../docs/)
 
 
@@ -25,7 +25,7 @@ We receive customer data from multiple sources with varying quality. Build a cle
 
 1. **Create your pipeline file**
 
-   Create: `cohort/{your-github-username}/week-2/cleaning_pipeline.py`
+   Create: `cleaning_pipeline.py`
 
 2. **Implement the `DataCleaningPipeline` class**
 
@@ -77,7 +77,7 @@ class DataCleaningPipeline:
 ## Test Locally
 
 ```bash
-pytest tests/test_2_3.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_2_3.py -v
 ```
 
 
@@ -85,10 +85,10 @@ pytest tests/test_2_3.py -v --student-folder=cohort/{your-github-username}
 
 1. **Create a branch:**
    ```bash
-   git checkout -b task-2.3-{your-github-username}
+   git checkout -b task-2.3
    ```
 
-2. **Do your work** in `cohort/{your-github-username}/`
+2. **Do your work** in the repository root
 
 3. **Test locally:**
    ```bash
@@ -99,7 +99,7 @@ pytest tests/test_2_3.py -v --student-folder=cohort/{your-github-username}
    ```bash
    git add .
    git commit -m "Complete task 2.3"
-   git push -u origin task-2.3-{your-github-username}
+   git push -u origin task-2.3
    ```
 
 5. **Open a Pull Request** on GitHub and wait for CI to pass
@@ -129,7 +129,7 @@ Automated tests will verify each cleaning method works correctly and that the pi
 - Check for trailing whitespace or formatting issues
 - Run `black` and `ruff` to auto-fix style issues
 
-**Still stuck?** Ask in `#ask-priya` on Discord!
+**Still stuck?** Ask in Team Chat!
 
 ---
 **Previous Task:** [Task 2.2: Write Validation Rules](../task-2.2/INSTRUCTIONS.md) | **Next Task:** [Task 2.4: Code Review Guidelines](../task-2.4/INSTRUCTIONS.md)

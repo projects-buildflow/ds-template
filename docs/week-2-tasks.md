@@ -13,7 +13,7 @@ Priya noticed some anomalies in last week's analytics report. Before we can trus
 
 ### Steps:
 1. Load the customer data from `data/customers.csv`
-2. Create a Jupyter notebook: `cohort/{your-github-username}/week-2/data_profile.ipynb`
+2. Create a Jupyter notebook: `data_profile.ipynb`
 3. Include the following sections:
    - **Data Overview**: Row count, column types, memory usage
    - **Missing Values**: Which columns have nulls? What percentage?
@@ -39,7 +39,7 @@ def profile_dataframe(df):
 
 ### Test locally:
 ```bash
-pytest tests/test_2_1.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_2_1.py -v
 ```
 
 ### Evaluation:
@@ -56,7 +56,7 @@ After your profiling report, the team decided we need automated data validation.
 
 ### Steps:
 1. Install Pandera if needed: `pip install pandera`
-2. Create: `cohort/{your-github-username}/week-2/validation_schema.py`
+2. Create: `validation_schema.py`
 3. Define a schema that validates:
    - `customer_id`: Positive integers, unique
    - `email`: Valid email format (contains @)
@@ -78,7 +78,7 @@ customer_schema = pa.DataFrameSchema({
 
 ### Test locally:
 ```bash
-pytest tests/test_2_2.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_2_2.py -v
 ```
 
 ### Evaluation:
@@ -94,7 +94,7 @@ PR-based with automated tests.
 We receive customer data from multiple sources with varying quality. Build a cleaning pipeline that can standardize and clean this data.
 
 ### Steps:
-1. Create: `cohort/{your-github-username}/week-2/cleaning_pipeline.py`
+1. Create: `cleaning_pipeline.py`
 2. Implement a `DataCleaningPipeline` class with these methods:
    - `standardize_emails(df)`: Lowercase all emails
    - `handle_missing_ages(df)`: Fill missing ages with median
@@ -125,7 +125,7 @@ class DataCleaningPipeline:
 
 ### Test locally:
 ```bash
-pytest tests/test_2_3.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_2_3.py -v
 ```
 
 ### Evaluation:
@@ -141,7 +141,7 @@ PR-based with automated tests.
 > **Priya:** "You've built a solid data cleaning pipeline. Now I want you to document what makes good data cleaning code. Create a review checklist that we can use when reviewing each other's data pipelines."
 
 ### Steps:
-1. Create: `cohort/{your-github-username}/week-2/code_review_checklist.md`
+1. Create: `code_review_checklist.md`
 2. Create a comprehensive checklist covering:
    - **Correctness**: Does the code actually clean the data properly?
    - **Robustness**: Does it handle edge cases and errors?
@@ -158,7 +158,7 @@ PR-based with automated tests.
 
 ### Test locally:
 ```bash
-pytest tests/test_2_4.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_2_4.py -v
 ```
 
 ### Evaluation:

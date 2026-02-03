@@ -8,8 +8,8 @@
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/cartly-data/{your-cohort-repo})
-- [Discord #ask-priya](https://discord.com/channels/cartly/ask-priya) - Get help
+- Your repository on GitHub
+- Team Chat - Get help from mentors
 - [All Tasks Overview](../../docs/)
 
 
@@ -40,11 +40,11 @@ Meera loved your revenue analysis! Now she wants a dashboard the team can check 
 
 3. **Save a screenshot**
 
-   Save as: `cohort/{your-github-username}/week-3/dashboard.png` (or .jpg)
+   Save as: `dashboard.png` (or .jpg)
 
 4. **Optional: Include code**
 
-   If using code, save in: `cohort/{your-github-username}/week-3/dashboard/`
+   If using code, save in: `dashboard/`
 
 ## Example with Streamlit
 
@@ -56,8 +56,8 @@ import plotly.express as px
 st.title("Cartly Executive Dashboard")
 
 # Load data
-orders = pd.read_csv('../../data/orders.csv', parse_dates=['order_date'])
-products = pd.read_csv('../../data/products.csv')
+orders = pd.read_csv('data/orders.csv', parse_dates=['order_date'])
+products = pd.read_csv('data/products.csv')
 
 # KPI Row
 col1, col2, col3 = st.columns(3)
@@ -84,7 +84,7 @@ st.subheader("Top 5 Products by Revenue")
 ## Test Locally
 
 ```bash
-pytest tests/test_3_4.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_3_4.py -v
 ```
 
 ## Dashboard Best Practices
@@ -124,7 +124,7 @@ Your dashboard screenshot will be reviewed by AI vision for:
 - Check for trailing whitespace or formatting issues
 - Run `black` and `ruff` to auto-fix style issues
 
-**Still stuck?** Ask in `#ask-priya` on Discord!
+**Still stuck?** Ask in Team Chat!
 
 ---
 **Previous Task:** [Task 3.3: Query Optimization](../task-3.3/INSTRUCTIONS.md) | **Next Task:** [Task 4.1: Pipeline Architecture](../../week-4/task-4.1/INSTRUCTIONS.md)

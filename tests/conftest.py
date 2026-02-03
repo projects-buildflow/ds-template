@@ -6,55 +6,49 @@ from pathlib import Path
 
 
 def pytest_addoption(parser):
-    """Add custom command-line options for pytest."""
+    """Add custom command line options."""
     parser.addoption(
         "--student-folder",
         action="store",
         default=None,
-        help="Path to student's submission folder (e.g., cohort/rahul-kumar)"
+        help="Path to student submission folder"
     )
 
 
 @pytest.fixture
 def student_folder(request):
-    """Get path to student's submission folder from CLI argument or environment."""
-    # First try CLI argument
+    """
+    Get path to student submission folder.
+
+    Priority:
+    1. --student-folder command line option
+    2. STUDENT_FOLDER environment variable
+    3. Repository root (default for GitHub Actions)
+    """
+    # Check command line option
     folder = request.config.getoption("--student-folder")
-
-    # Fallback to environment variable
-    if not folder:
-        folder = os.environ.get("STUDENT_FOLDER")
-
-    # For local testing, allow using a test folder
-    if not folder:
-        folder = os.environ.get("TEST_STUDENT_FOLDER")
-
     if folder:
-        return str(Path(folder).resolve())
+        return Path(folder)
 
-    return None
+    # Check environment variable
+    folder = os.environ.get("STUDENT_FOLDER")
+    if folder:
+        return Path(folder)
 
-
-@pytest.fixture
-def student_name(student_folder):
-    """Extract student name from folder path."""
-    if student_folder:
-        return Path(student_folder).name
-    return os.environ.get("STUDENT_NAME", "test_student")
+    # Default to repo root (works in GitHub Actions)
+    return Path(__file__).parent.parent
 
 
 @pytest.fixture
-def student_path(student_folder):
-    """Convert student_folder string to Path object."""
-    if student_folder:
-        return Path(student_folder)
-    return None
+def repo_root():
+    """Get path to repository root."""
+    return Path(__file__).parent.parent
 
 
 @pytest.fixture
-def data_path():
+def data_path(repo_root):
     """Get path to shared data folder."""
-    return Path(__file__).parent.parent / "data"
+    return repo_root / "data"
 
 
 @pytest.fixture

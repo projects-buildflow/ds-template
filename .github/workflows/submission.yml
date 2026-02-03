@@ -9,14 +9,13 @@ env:
 
 jobs:
   # ============================================
-  # Job 1: Detect task and validate paths
+  # Job 1: Detect task and validate
   # ============================================
   setup:
     name: Setup & Validate
     runs-on: ubuntu-latest
     outputs:
       task_id: ${{ steps.detect.outputs.task_id }}
-      student_name: ${{ steps.detect.outputs.student_name }}
       week: ${{ steps.detect.outputs.week }}
       has_notebook: ${{ steps.check-files.outputs.has_notebook }}
       has_screenshot: ${{ steps.check-files.outputs.has_screenshot }}
@@ -33,74 +32,34 @@ jobs:
           BRANCH="${{ github.head_ref }}"
           echo "Branch: $BRANCH"
 
-          # Extract task ID (e.g., "task-2.1-rahul-kumar" -> "2.1")
-          TASK_ID=$(echo "$BRANCH" | grep -oP 'task-\K[0-9]+\.[0-9]+' || echo "")
-
-          # Extract student name (e.g., "task-2.1-rahul-kumar" -> "rahul_kumar")
-          STUDENT=$(echo "$BRANCH" | sed 's/task-[0-9]*\.[0-9]*-//' | tr '-' '_')
+          # Flexible task ID extraction - matches multiple patterns:
+          # - task-1.2, task-1.2-description
+          # - feature/1.2-something
+          # - 1.2-fix-bug
+          # - fix/task-1.2
+          TASK_ID=$(echo "$BRANCH" | grep -oE '[0-9]+\.[0-9]+' | head -1 || echo "")
 
           # Get week number
           WEEK=$(echo "$TASK_ID" | cut -d'.' -f1)
 
           echo "task_id=$TASK_ID" >> $GITHUB_OUTPUT
-          echo "student_name=$STUDENT" >> $GITHUB_OUTPUT
           echo "week=$WEEK" >> $GITHUB_OUTPUT
 
-          echo "Detected: Task=$TASK_ID, Student=$STUDENT, Week=$WEEK"
+          echo "Detected: Task=$TASK_ID, Week=$WEEK"
 
       - name: Validate branch naming
         run: |
           BRANCH="${{ github.head_ref }}"
-          if [[ ! "$BRANCH" =~ ^task-[0-9]+\.[0-9]+-[a-z0-9_-]+$ ]]; then
-            echo "::error::Invalid branch name format"
-            echo "Expected: task-<week>.<task>-<student_name>"
-            echo "Example: task-2.1-rahul-kumar"
+          # Flexible validation - just needs to contain a task number pattern (X.Y)
+          if [[ ! "$BRANCH" =~ [0-9]+\.[0-9]+ ]]; then
+            echo "::error::Branch name must contain a task number (e.g., 1.2)"
+            echo "Valid examples: task-1.2, task-1.2-fix-bug, feature/1.2, 1.2-my-work"
             exit 1
           fi
 
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v41
-
-      - name: Validate paths
-        run: |
-          STUDENT="${{ steps.detect.outputs.student_name }}"
-          ALLOWED_PATTERNS=(
-            "cohort/${STUDENT}/"
-            "team/interns/${STUDENT}.md"
-          )
-
-          echo "Allowed patterns for $STUDENT:"
-          printf '%s\n' "${ALLOWED_PATTERNS[@]}"
-          echo ""
-
-          INVALID_FILES=()
-
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            VALID=false
-            for pattern in "${ALLOWED_PATTERNS[@]}"; do
-              if [[ "$file" == $pattern* ]]; then
-                VALID=true
-                break
-              fi
-            done
-
-            if [ "$VALID" = false ]; then
-              INVALID_FILES+=("$file")
-            fi
-          done
-
-          if [ ${#INVALID_FILES[@]} -gt 0 ]; then
-            echo "::error::You modified files outside your allowed paths:"
-            printf '  - %s\n' "${INVALID_FILES[@]}"
-            echo ""
-            echo "You can only modify files in:"
-            echo "  - cohort/${STUDENT}/"
-            echo "  - team/interns/${STUDENT}.md"
-            exit 1
-          fi
-
-          echo "All modified files are in allowed paths"
 
       - name: Check for special files
         id: check-files
@@ -144,31 +103,21 @@ jobs:
         id: ruff
         continue-on-error: true
         run: |
-          STUDENT="${{ needs.setup.outputs.student_name }}"
-          if [ -d "cohort/${STUDENT}" ]; then
-            ruff check cohort/${STUDENT}/ --output-format=github || echo "ruff_failed=true" >> $GITHUB_OUTPUT
-          else
-            echo "No cohort folder found for $STUDENT, skipping ruff"
-          fi
+          ruff check . --output-format=github || echo "ruff_failed=true" >> $GITHUB_OUTPUT
 
       - name: Check formatting with black
         id: black
         continue-on-error: true
         run: |
-          STUDENT="${{ needs.setup.outputs.student_name }}"
-          if [ -d "cohort/${STUDENT}" ]; then
-            black --check cohort/${STUDENT}/ || echo "black_failed=true" >> $GITHUB_OUTPUT
-          else
-            echo "No cohort folder found for $STUDENT, skipping black"
-          fi
+          black --check . || echo "black_failed=true" >> $GITHUB_OUTPUT
 
       - name: Lint summary
         run: |
           if [[ "${{ steps.ruff.outputs.ruff_failed }}" == "true" ]] || [[ "${{ steps.black.outputs.black_failed }}" == "true" ]]; then
             echo "::warning::Linting issues found. Please fix them."
             echo ""
-            echo "To fix formatting: black cohort/${{ needs.setup.outputs.student_name }}/"
-            echo "To check issues: ruff check cohort/${{ needs.setup.outputs.student_name }}/"
+            echo "To fix formatting: black ."
+            echo "To check issues: ruff check . --fix"
             exit 1
           fi
           echo "Linting passed"
@@ -202,10 +151,8 @@ jobs:
 
       - name: Run task tests
         id: test
-        continue-on-error: true
         run: |
           TASK_ID="${{ needs.setup.outputs.task_id }}"
-          STUDENT="${{ needs.setup.outputs.student_name }}"
 
           # Convert task ID to test file name (2.1 -> test_2_1.py)
           TEST_FILE="tests/test_${TASK_ID//./_}.py"
@@ -218,10 +165,12 @@ jobs:
             exit 0
           fi
 
-          # Run tests with JSON report
+          # Run tests with JSON report, capture exit code
+          set +e
           pytest "$TEST_FILE" -v \
-            --student-folder="cohort/${STUDENT}" \
-            --json-report --json-report-file=test-report.json 2>&1 | tee test-output.txt || true
+            --json-report --json-report-file=test-report.json 2>&1 | tee test-output.txt
+          TEST_EXIT_CODE=${PIPESTATUS[0]}
+          set -e
 
           # Parse results
           if [ -f test-report.json ]; then
@@ -233,13 +182,18 @@ jobs:
 
             if [ "$FAILED" -eq "0" ] && [ "$PASSED" -gt "0" ]; then
               echo "passed=true" >> $GITHUB_OUTPUT
+              echo "✅ All tests passed!"
             else
               echo "passed=false" >> $GITHUB_OUTPUT
+              echo "❌ Some tests failed. Please fix them before merging."
             fi
           else
             echo "No test report generated"
             echo "passed=false" >> $GITHUB_OUTPUT
           fi
+
+          # Exit with the test result so the job properly fails
+          exit $TEST_EXIT_CODE
 
       - name: Upload test report
         if: always()
@@ -279,7 +233,7 @@ jobs:
               "pr_url": "${{ github.event.pull_request.html_url }}",
               "task_id": "${{ needs.setup.outputs.task_id }}",
               "student_github": "${{ github.event.pull_request.user.login }}",
-              "cohort_repo": "${{ github.repository }}",
+              "repo": "${{ github.repository }}",
               "has_notebook": ${{ needs.setup.outputs.has_notebook }},
               "has_screenshot": ${{ needs.setup.outputs.has_screenshot }}
             }' || echo "AI review request failed (non-fatal)"
@@ -322,7 +276,50 @@ jobs:
               "branch_name": "${{ github.head_ref }}",
               "lint_passed": '"$LINT_PASSED"',
               "test_passed": "'"$TEST_PASSED"'",
-              "cohort_repo": "${{ github.repository }}"
+              "repo": "${{ github.repository }}",
+              "track": "ds"
             }' || echo "Backend notification failed (non-fatal)"
 
           echo "Backend notified"
+
+  # ============================================
+  # Job 6: Auto-merge PR when all checks pass
+  # ============================================
+  auto-merge:
+    name: Auto Merge
+    runs-on: ubuntu-latest
+    needs: [setup, lint, test]
+    if: |
+      needs.lint.result == 'success' &&
+      (needs.test.outputs.passed == 'true' || needs.test.outputs.passed == 'skip')
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Approve and merge PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          TASK_ID=${{ needs.setup.outputs.task_id }}
+
+          echo "✅ All checks passed for Task ${TASK_ID}!"
+          echo ""
+
+          # Approve the PR
+          echo "Approving PR #${PR_NUMBER}..."
+          gh pr review ${PR_NUMBER} --approve --body "✅ All checks passed! Auto-approved by BuildFlow."
+
+          # Merge the PR with squash
+          echo "Merging PR #${PR_NUMBER}..."
+          gh pr merge ${PR_NUMBER} \
+            --squash \
+            --delete-branch \
+            --body "🎉 Task ${TASK_ID} completed! Auto-merged by BuildFlow."
+
+          echo ""
+          echo "🎉 PR merged successfully!"

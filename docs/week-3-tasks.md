@@ -16,7 +16,7 @@ Meera (CEO) just sent an urgent Slack message: "Revenue is down 15% this month. 
 Priya has assigned this to you. Time to put your analysis skills to work.
 
 ### Steps:
-1. Create a Jupyter notebook: `cohort/{your-github-username}/week-3/revenue_investigation.ipynb`
+1. Create a Jupyter notebook: `revenue_investigation.ipynb`
 2. Analyze the data in `data/orders.csv` and `data/customers.csv`
 3. Your notebook must include these sections:
    - **Executive Summary**: Key finding in 2-3 sentences
@@ -43,13 +43,13 @@ Recommend [action] to address this.
 import pandas as pd
 import matplotlib.pyplot as plt
 
-orders = pd.read_csv('../../data/orders.csv')
+orders = pd.read_csv('data/orders.csv')
 # Your analysis here...
 ```
 
 ### Test locally:
 ```bash
-pytest tests/test_3_1.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_3_1.py -v
 ```
 
 ### Evaluation:
@@ -65,7 +65,7 @@ AI-powered notebook review for completeness and insight quality.
 Vikram (Product Manager) wants to understand customer retention patterns. He needs a cohort analysis showing how many customers return each month after their first purchase.
 
 ### Steps:
-1. Create: `cohort/{your-github-username}/week-3/cohort_analysis.sql`
+1. Create: `cohort_analysis.sql`
 2. Write a query that:
    - Groups customers by their first purchase month (cohort)
    - Shows retention for months 0, 1, 2, 3, 4, 5
@@ -102,7 +102,7 @@ ORDER BY cohort_month;
 
 ### Test locally:
 ```bash
-pytest tests/test_3_2.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_3_2.py -v
 ```
 
 ### Evaluation:
@@ -119,8 +119,8 @@ Ananya found a query that's taking 30+ seconds to run. It's blocking other repor
 
 ### Steps:
 1. Look at `week-3/task-3.3/slow_query.sql` (the original slow query)
-2. Create: `cohort/{your-github-username}/week-3/optimized_query.sql`
-3. Create: `cohort/{your-github-username}/week-3/optimization_notes.md` explaining:
+2. Create: `optimized_query.sql`
+3. Create: `optimization_notes.md` explaining:
    - What made the original query slow
    - What changes you made
    - Why your changes improve performance
@@ -134,7 +134,7 @@ Ananya found a query that's taking 30+ seconds to run. It's blocking other repor
 
 ### Test locally:
 ```bash
-pytest tests/test_3_3.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_3_3.py -v
 ```
 
 ### Evaluation:
@@ -156,8 +156,8 @@ Meera loved your revenue analysis! Now she wants a dashboard the team can check 
    - Active Customers (monthly)
    - Average Order Value
    - Top 5 Products by Revenue
-3. Take a screenshot and save as: `cohort/{your-github-username}/week-3/dashboard.png` (or .jpg)
-4. Optional: Include your dashboard code in `cohort/{your-github-username}/week-3/dashboard/`
+3. Take a screenshot and save as: `dashboard.png` (or .jpg)
+4. Optional: Include your dashboard code in `dashboard/`
 
 ### Example with Streamlit:
 ```python
@@ -168,7 +168,7 @@ import plotly.express as px
 st.title("Cartly Executive Dashboard")
 
 # Load data
-orders = pd.read_csv('../../data/orders.csv')
+orders = pd.read_csv('data/orders.csv')
 
 # KPI row
 col1, col2, col3 = st.columns(3)
@@ -181,7 +181,7 @@ col3.metric("Avg Order Value", f"${orders['total'].mean():.2f}")
 
 ### Test locally:
 ```bash
-pytest tests/test_3_4.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_3_4.py -v
 ```
 
 ### Evaluation:

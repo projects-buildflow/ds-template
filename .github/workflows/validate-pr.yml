@@ -22,7 +22,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ruff black pytest pandas numpy
+          pip install -r requirements.txt
+          pip install ruff black pytest
 
       - name: Extract task info from branch
         id: task_info
@@ -30,86 +31,47 @@ jobs:
           BRANCH="${{ github.head_ref }}"
           echo "Branch: $BRANCH"
 
-          # Parse branch name: task-{week}.{num}-{username}
-          if [[ $BRANCH =~ ^task-([0-9]+\.[0-9]+)-(.+)$ ]]; then
-            TASK_ID="${BASH_REMATCH[1]}"
-            USERNAME="${BASH_REMATCH[2]}"
+          # Flexible task ID extraction - matches multiple patterns:
+          # - task-1.2, task-1.2-description
+          # - feature/1.2-something
+          # - 1.2-fix-bug
+          TASK_ID=$(echo "$BRANCH" | grep -oE '[0-9]+\.[0-9]+' | head -1 || echo "")
+
+          if [[ -n "$TASK_ID" ]]; then
             echo "task_id=$TASK_ID" >> $GITHUB_OUTPUT
-            echo "username=$USERNAME" >> $GITHUB_OUTPUT
             echo "valid=true" >> $GITHUB_OUTPUT
-            echo "Task ID: $TASK_ID, Username: $USERNAME"
+            echo "Task ID: $TASK_ID"
           else
             echo "valid=false" >> $GITHUB_OUTPUT
-            echo "Branch name doesn't match expected pattern: task-X.Y-username"
+            echo "Branch name doesn't contain a task number (X.Y)"
           fi
 
       - name: Validate branch naming
         if: steps.task_info.outputs.valid != 'true'
         run: |
-          echo "::error::Branch name must follow pattern: task-{week}.{num}-{github-username}"
-          echo "Example: task-1.2-rahul-kumar"
+          echo "::error::Branch name must contain a task number (e.g., 1.2)"
+          echo "Valid examples: task-1.2, task-1.2-fix-bug, feature/1.2, 1.2-my-work"
           exit 1
-
-      - name: Validate file paths
-        run: |
-          USERNAME="${{ steps.task_info.outputs.username }}"
-
-          # Get changed files
-          CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
-
-          # Check that all changes are in the student's folder
-          INVALID_FILES=""
-          while IFS= read -r file; do
-            # Skip empty lines
-            [ -z "$file" ] && continue
-
-            # Allow changes only in cohort/{username}/ folder
-            if [[ ! $file =~ ^cohort/$USERNAME/ ]]; then
-              INVALID_FILES="$INVALID_FILES$file\n"
-            fi
-          done <<< "$CHANGED_FILES"
-
-          if [ -n "$INVALID_FILES" ]; then
-            echo "::error::You can only modify files in your folder: cohort/$USERNAME/"
-            echo "Invalid files:"
-            echo -e "$INVALID_FILES"
-            exit 1
-          fi
-
-          echo "All file paths are valid!"
 
       - name: Run linting
         id: lint
         continue-on-error: true
         run: |
-          USERNAME="${{ steps.task_info.outputs.username }}"
-
-          # Run ruff on student's folder
-          if [ -d "cohort/$USERNAME" ]; then
-            ruff check cohort/$USERNAME --output-format=github || echo "lint_failed=true" >> $GITHUB_OUTPUT
-            black --check cohort/$USERNAME || echo "lint_failed=true" >> $GITHUB_OUTPUT
-          fi
+          # Run ruff and black on Python files
+          ruff check . --output-format=github || echo "lint_failed=true" >> $GITHUB_OUTPUT
+          black --check . || echo "lint_failed=true" >> $GITHUB_OUTPUT
 
       - name: Run tests
         id: tests
         continue-on-error: true
         run: |
           TASK_ID="${{ steps.task_info.outputs.task_id }}"
-          USERNAME="${{ steps.task_info.outputs.username }}"
-
-          # Set PYTHONPATH to include student's folder
-          export PYTHONPATH="${PYTHONPATH}:$(pwd)/cohort/$USERNAME"
 
           # Run task-specific tests if they exist
           TEST_FILE="tests/test_${TASK_ID//./_}.py"
           if [ -f "$TEST_FILE" ]; then
             echo "Running tests from $TEST_FILE"
-            pytest "$TEST_FILE" -v --tb=short \
-              --student-folder="cohort/$USERNAME" \
-              || echo "tests_failed=true" >> $GITHUB_OUTPUT
+            pytest "$TEST_FILE" -v --tb=short || echo "tests_failed=true" >> $GITHUB_OUTPUT
           else
             echo "No test file found at $TEST_FILE, skipping tests"
           fi
@@ -120,7 +82,7 @@ jobs:
           TESTS_FAILED="${{ steps.tests.outputs.tests_failed }}"
 
           if [ "$LINT_FAILED" = "true" ]; then
-            echo "::error::Linting failed. Run 'ruff check .' and 'black .' to fix."
+            echo "::error::Linting failed. Run 'ruff check . --fix' and 'black .' to fix."
           fi
 
           if [ "$TESTS_FAILED" = "true" ]; then

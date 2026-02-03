@@ -8,8 +8,8 @@
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/cartly-data/{your-cohort-repo})
-- [Discord #ask-priya](https://discord.com/channels/cartly/ask-priya) - Get help
+- Your repository on GitHub
+- Team Chat - Get help from mentors
 - [All Tasks Overview](../../docs/)
 
 
@@ -22,7 +22,7 @@ Build the data pipeline you designed in Task 4.1.
 1. **Create your pipeline folder structure**
 
    ```
-   cohort/{your-github-username}/week-4/pipeline/
+   pipeline/
    ├── extract.py       # Data extraction functions
    ├── transform.py     # Data transformation functions
    ├── load.py          # Data loading functions
@@ -119,11 +119,11 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 
 ```bash
 # Run your pipeline
-cd cohort/{your-github-username}/week-4/pipeline
+cd pipeline
 python run_pipeline.py
 
 # Run automated tests
-pytest tests/test_4_2.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_4_2.py -v
 ```
 
 
@@ -131,10 +131,10 @@ pytest tests/test_4_2.py -v --student-folder=cohort/{your-github-username}
 
 1. **Create a branch:**
    ```bash
-   git checkout -b task-4.2-{your-github-username}
+   git checkout -b task-4.2
    ```
 
-2. **Do your work** in `cohort/{your-github-username}/`
+2. **Do your work** in the repository root
 
 3. **Test locally:**
    ```bash
@@ -145,7 +145,7 @@ pytest tests/test_4_2.py -v --student-folder=cohort/{your-github-username}
    ```bash
    git add .
    git commit -m "Complete task 4.2"
-   git push -u origin task-4.2-{your-github-username}
+   git push -u origin task-4.2
    ```
 
 5. **Open a Pull Request** on GitHub and wait for CI to pass
@@ -180,7 +180,7 @@ Automated tests will verify:
 - Check for trailing whitespace or formatting issues
 - Run `black` and `ruff` to auto-fix style issues
 
-**Still stuck?** Ask in `#ask-priya` on Discord!
+**Still stuck?** Ask in Team Chat!
 
 ---
 **Previous Task:** [Task 4.1: Pipeline Architecture](../task-4.1/INSTRUCTIONS.md) | **Next Task:** [Task 4.3: Debug AI Code](../task-4.3/INSTRUCTIONS.md)

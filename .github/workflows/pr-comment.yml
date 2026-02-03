@@ -41,7 +41,7 @@ Thanks for submitting Task ${taskId}!
 Check the **Checks** tab above for real-time status.
 
 ---
-*Need help? Ask in #ask-priya on Discord*`;
+*Need help? Ask in Team Chat at https://buildflow.dev/team*`;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,

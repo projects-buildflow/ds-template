@@ -51,8 +51,5 @@ Thumbs.db
 .env
 .env.local
 
-# Student submissions (local testing)
-cohort/test_student/
-
 # Keep generated data files tracked - they're part of the repo
 # !data/*.csv

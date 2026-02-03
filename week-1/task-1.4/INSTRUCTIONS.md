@@ -8,8 +8,8 @@
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/cartly-data/{your-cohort-repo})
-- [Discord #ask-priya](https://discord.com/channels/cartly/ask-priya) - Get help
+- Your repository on GitHub
+- Team Chat - Get help from mentors
 - [All Tasks Overview](../../docs/)
 
 
@@ -34,7 +34,7 @@ Create a troubleshooting document that explains:
 
 Create a file at:
 ```
-cohort/{your-github-username}/week-1/troubleshooting_date_bug.md
+troubleshooting_date_bug.md
 ```
 
 ## Template
@@ -93,10 +93,10 @@ Your PR will be checked for:
 
 1. **Create a branch:**
    ```bash
-   git checkout -b task-1.4-{your-github-username}
+   git checkout -b task-1.4
    ```
 
-2. **Do your work** in `cohort/{your-github-username}/`
+2. **Do your work** in the repository root
 
 3. **Test locally:**
    ```bash
@@ -107,7 +107,7 @@ Your PR will be checked for:
    ```bash
    git add .
    git commit -m "Complete task 1.4"
-   git push -u origin task-1.4-{your-github-username}
+   git push -u origin task-1.4
    ```
 
 5. **Open a Pull Request** on GitHub and wait for CI to pass
@@ -121,9 +121,9 @@ Your PR will be checked for:
 
 ## Submission
 
-1. Create a new branch: `git checkout -b task-1.4-{your-github-username}`
+1. Create a new branch: `git checkout -b task-1.4`
 2. Create your troubleshooting document
-3. Commit and push: `git add . && git commit -m "Add date bug troubleshooting docs" && git push -u origin task-1.4-{your-github-username}`
+3. Commit and push: `git add . && git commit -m "Add date bug troubleshooting docs" && git push -u origin task-1.4`
 4. Open a Pull Request on GitHub
 5. Wait for the automated checks to pass
 
@@ -142,7 +142,7 @@ Your PR will be checked for:
 - Check for trailing whitespace or formatting issues
 - Run `black` and `ruff` to auto-fix style issues
 
-**Still stuck?** Ask in `#ask-priya` on Discord!
+**Still stuck?** Ask in Team Chat!
 
 ---
 **Previous Task:** [Task 1.3: Fix the Date Bug](../task-1.3/INSTRUCTIONS.md) | **Next Task:** [Task 2.1: Profile the Marketing Data](../../week-2/task-2.1/INSTRUCTIONS.md)

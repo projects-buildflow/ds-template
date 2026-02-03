@@ -70,7 +70,7 @@ jobs:
               body += '### Tips\n';
               body += '- Read the error messages carefully\n';
               body += '- Check the task instructions\n';
-              body += '- Ask in #ask-priya if you need help\n';
+              body += '- Ask in Team Chat if you need help\n';
             } else {
               body += `**No tests ran** - this might be expected for some tasks.\n\n`;
             }

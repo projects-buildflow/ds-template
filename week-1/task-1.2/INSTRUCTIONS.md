@@ -8,8 +8,8 @@
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/cartly-data/{your-cohort-repo})
-- [Discord #ask-priya](https://discord.com/channels/cartly/ask-priya) - Get help
+- Your repository on GitHub
+- Team Chat - Get help from mentors
 - [All Tasks Overview](../../docs/)
 
 
@@ -29,7 +29,7 @@ Ananya from the Analytics team found that our customer deduplication isn't worki
 
 2. **Create your solution file**
 
-   Create: `cohort/{your-github-username}/week-1/clean_data.py`
+   Create: `clean_data.py`
 
 3. **Implement the function**
 
@@ -62,7 +62,7 @@ Your function should:
 ## Test Locally
 
 ```bash
-pytest tests/test_1_2.py -v --student-folder=cohort/{your-github-username}
+pytest tests/test_1_2.py -v
 ```
 
 ## Hints
@@ -80,10 +80,10 @@ Submit your PR. Automated tests will verify your implementation.
 
 1. **Create a branch:**
    ```bash
-   git checkout -b task-1.2-{your-github-username}
+   git checkout -b task-1.2
    ```
 
-2. **Do your work** in `cohort/{your-github-username}/`
+2. **Do your work** in the repository root
 
 3. **Test locally:**
    ```bash
@@ -94,7 +94,7 @@ Submit your PR. Automated tests will verify your implementation.
    ```bash
    git add .
    git commit -m "Complete task 1.2"
-   git push -u origin task-1.2-{your-github-username}
+   git push -u origin task-1.2
    ```
 
 5. **Open a Pull Request** on GitHub and wait for CI to pass
@@ -114,7 +114,7 @@ Submit your PR. Automated tests will verify your implementation.
 - Check for trailing whitespace or formatting issues
 - Run `black` and `ruff` to auto-fix style issues
 
-**Still stuck?** Ask in `#ask-priya` on Discord!
+**Still stuck?** Ask in Team Chat!
 
 ---
 **Previous Task:** [Task 1.1: Environment Setup](../task-1.1/INSTRUCTIONS.md) | **Next Task:** [Task 1.3: Fix the Date Bug](../task-1.3/INSTRUCTIONS.md)

@@ -3,7 +3,7 @@
 Verify Setup Script for Task 1.1
 
 This script checks that your development environment is properly configured
-and generates a verification token to submit via Discord or the web portal.
+and generates a verification token to submit via the web portal.
 
 Usage:
     python scripts/verify_setup.py
@@ -128,9 +128,8 @@ def main():
         print()
         print(f"    {token}")
         print()
-        print("  Submit this token using one of these methods:")
-        print("    1. Discord: /submit {token}")
-        print("    2. Web portal: Go to Task 1.1 and enter the token")
+        print("  Submit this token using the web portal:")
+        print("    Web portal: Go to Task 1.1 and enter the token")
         print()
         print("=" * 60)
         return 0
