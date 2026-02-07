@@ -131,6 +131,7 @@ jobs:
     needs: setup
     outputs:
       passed: ${{ steps.test.outputs.passed }}
+      test_score: ${{ steps.test.outputs.test_score }}
       output: ${{ steps.test.outputs.output }}
 
     steps:
@@ -147,7 +148,7 @@ jobs:
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           fi
-          pip install pytest pytest-json-report pandas pandera
+          pip install pytest pytest-json-report pandas pandera duckdb nbclient nbformat PyPDF2
 
       - name: Run task tests
         id: test
@@ -180,16 +181,28 @@ jobs:
 
             echo "Results: $PASSED passed, $FAILED failed, $TOTAL total"
 
-            if [ "$FAILED" -eq "0" ] && [ "$PASSED" -gt "0" ]; then
+            # Enforce no-skip policy: skipped tests count as failures
+            SKIPPED=$(python -c "import json; r=json.load(open('test-report.json')); print(r['summary'].get('skipped', 0))")
+
+            # Compute test_score as percentage of passed tests
+            TEST_SCORE=$(python -c "import json; r=json.load(open('test-report.json')); s=r['summary']; print(int(100*s['passed']/s['total']) if s['total']>0 else 0)")
+            echo "test_score=$TEST_SCORE" >> $GITHUB_OUTPUT
+
+            if [ "$FAILED" -eq "0" ] && [ "$PASSED" -gt "0" ] && [ "$SKIPPED" -eq "0" ]; then
               echo "passed=true" >> $GITHUB_OUTPUT
-              echo "✅ All tests passed!"
+              echo "✅ All tests passed! Score: $TEST_SCORE%"
             else
               echo "passed=false" >> $GITHUB_OUTPUT
-              echo "❌ Some tests failed. Please fix them before merging."
+              if [ "$SKIPPED" -gt "0" ]; then
+                echo "❌ $SKIPPED tests were skipped. All tests must pass without skips."
+              else
+                echo "❌ Some tests failed. Please fix them before merging."
+              fi
             fi
           else
             echo "No test report generated"
             echo "passed=false" >> $GITHUB_OUTPUT
+            echo "test_score=0" >> $GITHUB_OUTPUT
           fi
 
           # Exit with the test result so the job properly fails
@@ -225,7 +238,7 @@ jobs:
             exit 0
           fi
 
-          curl -X POST "${BACKEND_URL}/webhooks/ai-review" \
+          curl -X POST "${BACKEND_URL}/webhooks/ai-review-complete" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${WEBHOOK_SECRET}" \
             -d '{
@@ -263,6 +276,13 @@ jobs:
           # Determine overall status
           LINT_PASSED="${{ needs.lint.result == 'success' }}"
           TEST_PASSED="${{ needs.test.outputs.passed }}"
+          TEST_SCORE="${{ needs.test.outputs.test_score }}"
+
+          # Convert skip to false — skipped tests should not count as passing
+          if [ "$TEST_PASSED" = "skip" ]; then
+            TEST_PASSED="false"
+            TEST_SCORE="0"
+          fi
 
           curl -X POST "${BACKEND_URL}/webhooks/github" \
             -H "Content-Type: application/json" \
@@ -276,6 +296,7 @@ jobs:
               "branch_name": "${{ github.head_ref }}",
               "lint_passed": '"$LINT_PASSED"',
               "test_passed": "'"$TEST_PASSED"'",
+              "test_score": '"$TEST_SCORE"',
               "repo": "${{ github.repository }}",
               "track": "ds"
             }' || echo "Backend notification failed (non-fatal)"
@@ -291,7 +312,7 @@ jobs:
     needs: [setup, lint, test]
     if: |
       needs.lint.result == 'success' &&
-      (needs.test.outputs.passed == 'true' || needs.test.outputs.passed == 'skip')
+      needs.test.outputs.passed == 'true'
     permissions:
       contents: write
       pull-requests: write

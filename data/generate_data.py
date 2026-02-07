@@ -1,5 +1,5 @@
 """
-Cartly Data Generator - Production Quality
+Buildly Data Generator - Production Quality
 
 Generates large, realistic e-commerce datasets with intentional data quality
 issues for students to discover and fix during their internship.
@@ -59,7 +59,7 @@ REGIONS = {
     "Germany": {"weight": 0.05, "locale": "de_DE", "currency": "EUR"},
     "Canada": {"weight": 0.05, "locale": "en_CA", "currency": "CAD"},
     "Australia": {"weight": 0.05, "locale": "en_AU", "currency": "AUD"},
-    "Singapore": {"weight": 0.05, "locale": "en_SG", "currency": "SGD"},
+    "Singapore": {"weight": 0.05, "locale": "en_US", "currency": "SGD"},
 }
 
 # Product catalog (comprehensive)
@@ -200,9 +200,69 @@ class DataGenerator:
             faker = self.fakers[region]
             return faker.first_name(), faker.last_name()
         else:
-            # Fallback names
-            first_names = ["Rahul", "Priya", "John", "Sarah", "Wei", "Yuki"]
-            last_names = ["Kumar", "Smith", "Chen", "Tanaka", "Singh", "Patel"]
+            # Fallback names — large pools per region to avoid duplicate emails
+            _FALLBACK_FIRST = {
+                "India": ["Rahul", "Priya", "Amit", "Sneha", "Arjun", "Meera", "Vikram", "Ananya",
+                           "Rohit", "Kavya", "Nikhil", "Divya", "Saurabh", "Pooja", "Aditya", "Neha",
+                           "Kartik", "Ishita", "Manish", "Shruti", "Deepak", "Riya", "Varun", "Tanvi",
+                           "Harsh", "Pallavi", "Gaurav", "Swati", "Rajesh", "Komal", "Akash", "Sakshi",
+                           "Vishal", "Preeti", "Kunal", "Aarti", "Siddharth", "Megha", "Ashish", "Nisha"],
+                "USA": ["James", "Mary", "Robert", "Jennifer", "Michael", "Linda", "David", "Sarah",
+                         "William", "Jessica", "Daniel", "Emily", "Joseph", "Hannah", "Andrew", "Megan",
+                         "Tyler", "Rachel", "Brandon", "Nicole", "Nathan", "Ashley", "Ryan", "Samantha",
+                         "Kevin", "Lauren", "Brian", "Amanda", "Justin", "Stephanie", "Jason", "Brittany",
+                         "Eric", "Heather", "Patrick", "Tiffany", "Sean", "Christina", "Jeremy", "Michelle"],
+                "UK": ["Oliver", "Amelia", "Jack", "Olivia", "Harry", "Isla", "George", "Emily",
+                        "Charlie", "Sophia", "Thomas", "Grace", "James", "Lily", "William", "Ella",
+                        "Edward", "Charlotte", "Henry", "Freya", "Sam", "Chloe", "Ben", "Mia",
+                        "Alexander", "Poppy", "Daniel", "Evie", "Luke", "Ruby", "Matthew", "Daisy",
+                        "Ethan", "Alice", "Noah", "Isabella", "Leo", "Jessica", "Oscar", "Florence"],
+                "Germany": ["Lukas", "Emma", "Leon", "Mia", "Finn", "Hannah", "Jonas", "Lina",
+                             "Felix", "Emilia", "Paul", "Marie", "Max", "Sophie", "Elias", "Anna",
+                             "Noah", "Lea", "Ben", "Clara", "Liam", "Lena", "Tim", "Johanna",
+                             "Jan", "Laura", "Nico", "Sarah", "Tom", "Julia", "Moritz", "Lisa",
+                             "David", "Amelie", "Julian", "Maja", "Erik", "Nele", "Philipp", "Katharina"],
+                "Canada": ["Liam", "Emma", "Noah", "Olivia", "Ethan", "Ava", "Lucas", "Sophia",
+                            "Mason", "Isabella", "Logan", "Mia", "James", "Charlotte", "Benjamin", "Amelia",
+                            "Jacob", "Harper", "Alexander", "Evelyn", "Daniel", "Abigail", "Henry", "Emily",
+                            "Sebastian", "Ella", "Jack", "Elizabeth", "Owen", "Camila", "Dylan", "Luna",
+                            "Nathan", "Sofia", "Caleb", "Avery", "Ryan", "Scarlett", "Luke", "Grace"],
+                "Australia": ["Oliver", "Charlotte", "William", "Amelia", "Jack", "Olivia", "Noah", "Isla",
+                               "Thomas", "Mia", "Leo", "Ava", "Charlie", "Grace", "Henry", "Willow",
+                               "James", "Harper", "Liam", "Ella", "Ethan", "Chloe", "Lucas", "Zoe",
+                               "Mason", "Lily", "Alexander", "Ruby", "Daniel", "Sophie", "Samuel", "Ivy",
+                               "Benjamin", "Matilda", "Max", "Sienna", "Archie", "Evie", "Oscar", "Layla"],
+                "Singapore": ["Wei", "Mei", "Jun", "Xin", "Kai", "Hui", "Zhi", "Ying",
+                               "Jia", "Lin", "Chen", "Fang", "Ming", "Rui", "Hong", "Yan",
+                               "Shen", "Wen", "Hao", "Qi", "Raj", "Priya", "Arun", "Lakshmi",
+                               "Ahmad", "Siti", "Muhammad", "Nur", "Ismail", "Aminah", "Ali", "Fatimah",
+                               "Daniel", "Sarah", "Ryan", "Rachel", "Marcus", "Nicole", "Joshua", "Hannah"],
+            }
+            _FALLBACK_LAST = {
+                "India": ["Kumar", "Singh", "Patel", "Sharma", "Gupta", "Nair", "Reddy", "Iyer",
+                           "Verma", "Joshi", "Shah", "Mehta", "Das", "Rao", "Chatterjee", "Mishra",
+                           "Deshmukh", "Kapoor", "Bhat", "Pillai"],
+                "USA": ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis",
+                         "Rodriguez", "Martinez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson",
+                         "Martin", "Lee", "Thompson", "White"],
+                "UK": ["Smith", "Jones", "Taylor", "Brown", "Williams", "Wilson", "Johnson", "Davies",
+                        "Robinson", "Wright", "Thompson", "Evans", "Walker", "White", "Roberts", "Green",
+                        "Hall", "Wood", "Jackson", "Clarke"],
+                "Germany": ["Mueller", "Schmidt", "Schneider", "Fischer", "Weber", "Meyer", "Wagner", "Becker",
+                             "Schulz", "Hoffmann", "Koch", "Richter", "Wolf", "Schroeder", "Neumann", "Schwarz",
+                             "Zimmermann", "Braun", "Krueger", "Hartmann"],
+                "Canada": ["Smith", "Brown", "Tremblay", "Martin", "Roy", "Wilson", "MacDonald", "Taylor",
+                            "Campbell", "Anderson", "Jones", "Leblanc", "Johnson", "Williams", "Thomson", "Cote",
+                            "Singh", "Patel", "Lee", "Chen"],
+                "Australia": ["Smith", "Jones", "Williams", "Brown", "Wilson", "Taylor", "Johnson", "White",
+                               "Martin", "Anderson", "Thompson", "Nguyen", "Thomas", "Walker", "Harris", "Lee",
+                               "Ryan", "Robinson", "Kelly", "King"],
+                "Singapore": ["Tan", "Lim", "Lee", "Ng", "Ong", "Wong", "Goh", "Chua",
+                               "Chan", "Koh", "Teo", "Ang", "Yeo", "Ho", "Sim", "Low",
+                               "Kumar", "Singh", "Ahmad", "Mohamed"],
+            }
+            first_names = _FALLBACK_FIRST.get(region, _FALLBACK_FIRST["USA"])
+            last_names = _FALLBACK_LAST.get(region, _FALLBACK_LAST["USA"])
             return random.choice(first_names), random.choice(last_names)
 
     def _generate_email(self, first_name: str, last_name: str, variation: str = None) -> str:
@@ -259,12 +319,13 @@ class DataGenerator:
             # Decide if this is a duplicate (~3% duplicates)
             is_duplicate = random.random() < 0.03 and len(self.customer_emails) > 100
             if is_duplicate:
-                # Pick an existing email and create variation
-                original_email = random.choice(list(self.customer_emails.keys()))
-                email = self._generate_email(first_name, last_name,
-                                             variation=random.choice(["uppercase", "mixed"]))
-                # Use same base email with variation
-                email = original_email.upper() if random.random() < 0.5 else original_email
+                # Pick an existing customer and reuse their name with an email case variation
+                orig_email = random.choice(list(self.customer_emails.keys()))
+                variation = random.choice(["uppercase", "mixed"])
+                if variation == "uppercase":
+                    email = orig_email.upper()
+                else:
+                    email = ''.join(c.upper() if random.random() > 0.5 else c for c in orig_email)
             else:
                 email = self._generate_email(first_name, last_name)
 
@@ -386,14 +447,17 @@ class DataGenerator:
 
                 order_date = signup + timedelta(days=order_day)
 
-                # Seasonal adjustment (Q4 has more orders)
-                if order_date.month in [10, 11, 12]:
-                    if random.random() > 0.3:  # 70% chance to keep Q4 order
-                        pass
-                    else:
-                        continue
+                # Seasonal adjustment — Q4 generally has more orders
+                # except October 2024 which has an anomaly: fewer orders, extra cancellations, lower values
+                is_october_anomaly = (order_date.year == 2024 and order_date.month == 10)
+
+                # October 2024 anomaly: reduced order volume + extra cancellations
+                if is_october_anomaly and random.random() < 0.15:
+                    continue
 
                 status = self._weighted_choice(status_list, status_weights)
+                if is_october_anomaly and random.random() < 0.05:
+                    status = "cancelled"
                 payment = self._weighted_choice(PAYMENT_METHODS, PAYMENT_WEIGHTS)
 
                 # Generate order items (1-5 items per order)
@@ -411,6 +475,9 @@ class DataGenerator:
                     price_multiplier = 1.0
                     if random.random() < 0.20:  # 20% chance of discount
                         price_multiplier = random.uniform(0.85, 0.95)
+                    # October 2024 anomaly: slightly lower order values
+                    if is_october_anomaly:
+                        price_multiplier *= random.uniform(0.90, 0.97)
                     unit_price = round(base_price * price_multiplier, 2)
                     item_total = unit_price * quantity
 
@@ -651,6 +718,47 @@ class DataGenerator:
 
         return tickets
 
+    def generate_marketing_customers_raw(self) -> list[dict]:
+        """Generate a messy 'marketing export' of customer data.
+
+        Simulates a CSV dump from a marketing tool with different column names,
+        extra junk columns, more missing values, and whitespace padding.
+        """
+        print("Generating marketing_customers_raw (messy export)...")
+
+        raw_records = []
+        sources = ["facebook_lead", "google_form", "webinar_signup", "email_capture", "partner_import"]
+
+        for c in self.customers:
+            # ~10% missing values across various fields
+            name = f"  {c['first_name']} {c['last_name']}  " if random.random() > 0.05 else ""
+            email = c["email"] if random.random() > 0.08 else ""
+            age = c["age"] if random.random() > 0.10 else ""
+            phone = c["phone"] if random.random() > 0.12 else ""
+
+            # Whitespace padding on some fields
+            city = f" {c['city']} " if random.random() > 0.3 else c["city"]
+
+            record = {
+                "full_name": name,
+                "email_address": email,
+                "age": age,
+                "gender": c["gender"],
+                "phone_number": phone,
+                "location": city,
+                "country": c["country"],
+                "date_joined": c["signup_date"],
+                "lead_source": random.choice(sources),
+                "utm_campaign": f"camp_{random.randint(100, 999)}" if random.random() > 0.4 else "",
+                "utm_medium": random.choice(["cpc", "organic", "social", "email", ""]),
+                "notes": random.choice(["", "", "", "follow up", "VIP", "do not contact", ""]),
+                "is_subscribed": c["is_subscribed"],
+            }
+            raw_records.append(record)
+
+        print(f"  Generated {len(raw_records):,} marketing records")
+        return raw_records
+
 
 # ============== Output Functions ==============
 
@@ -674,7 +782,7 @@ def save_csv(data: list[dict], filepath: Path, fieldnames: list = None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate Cartly e-commerce dataset")
+    parser = argparse.ArgumentParser(description="Generate Buildly e-commerce dataset")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     parser.add_argument("--customers", type=int, default=10000, help="Number of customers")
     parser.add_argument("--output", type=str, default=".", help="Output directory")
@@ -685,7 +793,7 @@ def main():
     output_dir = Path(args.output)
 
     print("=" * 60)
-    print("CARTLY DATA GENERATOR")
+    print("BUILDLY DATA GENERATOR")
     print("=" * 60)
     print(f"Seed: {args.seed}")
     print(f"Customers: {args.customers:,}")
@@ -701,6 +809,8 @@ def main():
     campaigns = generator.generate_marketing_campaigns(200)
     support_tickets = generator.generate_support_tickets(int(args.customers * 0.3))
 
+    marketing_raw = generator.generate_marketing_customers_raw()
+
     if not args.skip_sessions:
         sessions = generator.generate_website_sessions(args.customers * 5)
     else:
@@ -715,6 +825,7 @@ def main():
     save_csv(CATEGORIES, output_dir / "categories.csv")
     save_csv(campaigns, output_dir / "marketing_campaigns.csv")
     save_csv(support_tickets, output_dir / "customer_support.csv")
+    save_csv(marketing_raw, output_dir / "marketing_customers_raw.csv")
 
     if sessions:
         save_csv(sessions, output_dir / "website_sessions.csv")
@@ -735,6 +846,12 @@ def main():
     print("  - ~0.5% negative totals")
     print("  - ~0.3% missing customer_id")
     print("  - ~0.5% negative quantities in items")
+    print("  - October 2024 anomaly: fewer orders + extra cancellations + lower values (~15% revenue drop)")
+    print("\nMarketing Raw:")
+    print("  - Different column names from customers.csv")
+    print("  - ~10% missing values across fields")
+    print("  - Whitespace padding on names and cities")
+    print("  - Extra junk columns (utm_campaign, notes, etc.)")
     print("\nCampaigns:")
     print("  - ~2% budget overspend")
     print("  - ~1% invalid impressions")
