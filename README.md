@@ -15,10 +15,7 @@ cartly-data/
 │   └── verify_setup.py     # Task 1.1 verification
 ├── src/                    # Source code modules
 ├── tests/                  # Automated tests for your submissions
-├── week-1/                 # Your Week 1 work goes here
-├── week-2/                 # Your Week 2 work goes here
-├── week-3/                 # Your Week 3 work goes here
-├── week-4/                 # Your Week 4 work goes here
+├── submissions/            # Your work goes here
 └── requirements.txt        # Python dependencies
 ```
 
@@ -56,7 +53,7 @@ pip install -r requirements.txt
 python scripts/verify_setup.py
 ```
 
-If successful, you'll receive a verification token. Save the output to `week-1/setup_complete.txt` and submit via PR.
+If successful, you'll receive a verification token. Submit it on your dashboard.
 
 ## Tech Stack
 
@@ -92,12 +89,12 @@ Your team members will guide you through the internship:
 
 ### Token Tasks (Task 1.1)
 1. Run the verification script
-2. Save output to the specified file
-3. Create a PR with the file
+2. Copy the token from the output
+3. Submit the token on your dashboard
 
 ### Code Tasks (Most Tasks)
 1. Create a new branch: `git checkout -b task-1.2`
-2. Make your changes in the appropriate `week-X/` folder
+2. Make your changes in the `submissions/` folder
 3. Commit: `git commit -m "Complete task 1.2: Fix deduplication bug"`
 4. Push: `git push -u origin task-1.2`
 5. Create a Pull Request on GitHub
