@@ -150,6 +150,17 @@ jobs:
           fi
           pip install pytest pytest-json-report pandas pandera duckdb nbclient nbformat PyPDF2
 
+      - name: Execute notebooks
+        if: needs.setup.outputs.has_notebook == 'true'
+        run: |
+          for nb in $(find submissions/ -name "*.ipynb" 2>/dev/null); do
+            echo "Executing: $nb"
+            python -m nbclient "$nb" --timeout 120 || {
+              echo "::error::Notebook execution failed: $nb"
+              exit 1
+            }
+          done
+
       - name: Run task tests
         id: test
         run: |
