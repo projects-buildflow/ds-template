@@ -281,23 +281,39 @@ jobs:
             FAILED_TESTS="[]"
           fi
 
+          # Use jq to safely construct JSON (handles quotes/newlines in failed_tests)
+          PAYLOAD=$(jq -n \
+            --arg event "pr_check_complete" \
+            --argjson pr_number ${{ github.event.pull_request.number }} \
+            --arg pr_url "${{ github.event.pull_request.html_url }}" \
+            --arg task_id "${{ needs.setup.outputs.task_id }}" \
+            --arg student_github "${{ github.event.pull_request.user.login }}" \
+            --arg branch_name "${{ github.head_ref }}" \
+            --argjson lint_passed $LINT_PASSED \
+            --arg test_passed "$TEST_PASSED" \
+            --argjson test_score ${TEST_SCORE:-0} \
+            --arg repo "${{ github.repository }}" \
+            --arg track "ds" \
+            --argjson failed_tests "$FAILED_TESTS" \
+            '{
+              event: $event,
+              pr_number: $pr_number,
+              pr_url: $pr_url,
+              task_id: $task_id,
+              student_github: $student_github,
+              branch_name: $branch_name,
+              lint_passed: $lint_passed,
+              test_passed: $test_passed,
+              test_score: $test_score,
+              repo: $repo,
+              track: $track,
+              failed_tests: $failed_tests
+            }')
+
           curl -X POST "${BACKEND_URL}/webhooks/github" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${WEBHOOK_SECRET}" \
-            -d '{
-              "event": "pr_check_complete",
-              "pr_number": ${{ github.event.pull_request.number }},
-              "pr_url": "${{ github.event.pull_request.html_url }}",
-              "task_id": "${{ needs.setup.outputs.task_id }}",
-              "student_github": "${{ github.event.pull_request.user.login }}",
-              "branch_name": "${{ github.head_ref }}",
-              "lint_passed": '"$LINT_PASSED"',
-              "test_passed": "'"$TEST_PASSED"'",
-              "test_score": '"$TEST_SCORE"',
-              "repo": "${{ github.repository }}",
-              "track": "ds",
-              "failed_tests": '"$FAILED_TESTS"'
-            }' || echo "Backend notification failed (non-fatal)"
+            -d "$PAYLOAD" || echo "Backend notification failed (non-fatal)"
 
           echo "Backend notified"
 
