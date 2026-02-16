@@ -133,6 +133,7 @@ jobs:
       passed: ${{ steps.test.outputs.passed }}
       test_score: ${{ steps.test.outputs.test_score }}
       output: ${{ steps.test.outputs.output }}
+      failed_tests: ${{ steps.failures.outputs.failed_tests }}
 
     steps:
       - name: Checkout code
@@ -213,6 +214,27 @@ jobs:
           # Exit with the test result so the job properly fails
           exit $TEST_EXIT_CODE
 
+      - name: Extract failed test details
+        id: failures
+        if: always()
+        run: |
+          if [ -f test-report.json ]; then
+            FAILED_TESTS=$(python -c "
+          import json
+          r = json.load(open('test-report.json'))
+          failures = []
+          for t in r.get('tests', []):
+              if t.get('outcome') == 'failed':
+                  name = t.get('nodeid', '').split('::')[-1]
+                  msg = (t.get('call') or {}).get('crash', {}).get('message', '')[:200]
+                  failures.append({'name': name, 'error': msg})
+          print(json.dumps(failures[:10]))
+          " 2>/dev/null || echo "[]")
+            echo "failed_tests=$FAILED_TESTS" >> $GITHUB_OUTPUT
+          else
+            echo "failed_tests=[]" >> $GITHUB_OUTPUT
+          fi
+
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
@@ -254,6 +276,11 @@ jobs:
             TEST_SCORE="0"
           fi
 
+          FAILED_TESTS='${{ needs.test.outputs.failed_tests }}'
+          if [ -z "$FAILED_TESTS" ]; then
+            FAILED_TESTS="[]"
+          fi
+
           curl -X POST "${BACKEND_URL}/webhooks/github" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${WEBHOOK_SECRET}" \
@@ -268,7 +295,8 @@ jobs:
               "test_passed": "'"$TEST_PASSED"'",
               "test_score": '"$TEST_SCORE"',
               "repo": "${{ github.repository }}",
-              "track": "ds"
+              "track": "ds",
+              "failed_tests": '"$FAILED_TESTS"'
             }' || echo "Backend notification failed (non-fatal)"
 
           echo "Backend notified"
