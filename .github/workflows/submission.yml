@@ -259,6 +259,10 @@ jobs:
         env:
           BACKEND_URL: ${{ secrets.BACKEND_URL }}
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+          FAILED_TESTS: ${{ needs.test.outputs.failed_tests }}
+          RAW_TEST_PASSED: ${{ needs.test.outputs.passed }}
+          RAW_TEST_SCORE: ${{ needs.test.outputs.test_score }}
+          RAW_LINT_PASSED: ${{ needs.lint.result == 'success' }}
         run: |
           if [ -z "$BACKEND_URL" ]; then
             echo "BACKEND_URL not configured, skipping notification"
@@ -266,9 +270,9 @@ jobs:
           fi
 
           # Determine overall status
-          LINT_PASSED="${{ needs.lint.result == 'success' }}"
-          TEST_PASSED="${{ needs.test.outputs.passed }}"
-          TEST_SCORE="${{ needs.test.outputs.test_score }}"
+          LINT_PASSED="$RAW_LINT_PASSED"
+          TEST_PASSED="$RAW_TEST_PASSED"
+          TEST_SCORE="$RAW_TEST_SCORE"
 
           # Convert skip to false — skipped tests should not count as passing
           if [ "$TEST_PASSED" = "skip" ]; then
@@ -276,7 +280,6 @@ jobs:
             TEST_SCORE="0"
           fi
 
-          FAILED_TESTS='${{ needs.test.outputs.failed_tests }}'
           if [ -z "$FAILED_TESTS" ]; then
             FAILED_TESTS="[]"
           fi
@@ -284,14 +287,14 @@ jobs:
           # Use jq to safely construct JSON (handles quotes/newlines in failed_tests)
           PAYLOAD=$(jq -n \
             --arg event "pr_check_complete" \
-            --argjson pr_number ${{ github.event.pull_request.number }} \
+            --argjson pr_number "${{ github.event.pull_request.number }}" \
             --arg pr_url "${{ github.event.pull_request.html_url }}" \
             --arg task_id "${{ needs.setup.outputs.task_id }}" \
             --arg student_github "${{ github.event.pull_request.user.login }}" \
             --arg branch_name "${{ github.head_ref }}" \
-            --argjson lint_passed $LINT_PASSED \
+            --argjson lint_passed "$LINT_PASSED" \
             --arg test_passed "$TEST_PASSED" \
-            --argjson test_score ${TEST_SCORE:-0} \
+            --argjson test_score "${TEST_SCORE:-0}" \
             --arg repo "${{ github.repository }}" \
             --arg track "ds" \
             --argjson failed_tests "$FAILED_TESTS" \
